@@ -553,6 +553,7 @@
       <div class="pill-body">
         <div class="pill-label">Rhône · Ternay</div>
         <div class="pill-value blue" id="rhone-debit">—<span class="unit"> m³/s</span></div>
+        <div class="pill-sub" id="rhone-heure">—</div>
       </div>
       <div class="rhone-level-wrap">
         <div class="rhone-level-bar">
@@ -1009,7 +1010,9 @@
       if (data?.data?.length > 0) {
         const last = data.data[0];
         const m3s = (last.resultat_obs / 1000).toFixed(0);
+        const h   = new Date(last.date_obs).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
         document.getElementById('rhone-debit').innerHTML = `${m3s}<span class="unit"> m³/s</span>`;
+        document.getElementById('rhone-heure').innerHTML = `Relevé ${h} <span style="opacity:0.55;font-size:0.85em">${STATIONS[idx]}</span>`;
         const QMAX  = 4780;
         const QMOD  = 1060;
         const debit = parseInt(m3s);
