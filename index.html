@@ -402,6 +402,15 @@
       white-space: nowrap;
     }
 
+    .station-num {
+      font-size: clamp(7px, 1vw, 11px);
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      text-transform: none;
+      color: var(--muted2);
+      opacity: 0.8;
+    }
+
     .pill-value {
       font-family: 'Bebas Neue', sans-serif;
       font-size: var(--pill-val-size);
@@ -551,7 +560,7 @@
     <div class="info-pill">
       <div class="pill-icon">🌊</div>
       <div class="pill-body">
-        <div class="pill-label">Rhône · Ternay</div>
+        <div class="pill-label">Rhône · Ternay <span class="station-num" id="rhone-station"></span></div>
         <div class="pill-value blue" id="rhone-debit">—<span class="unit"> m³/s</span></div>
         <div class="pill-sub" id="rhone-heure">—</div>
       </div>
@@ -1008,11 +1017,14 @@
       const res  = await fetch(`https://hubeau.eaufrance.fr/api/v2/hydrometrie/observations_tr?code_entite=${STATIONS[idx]}&grandeur_hydro=Q&size=1&sort=desc&fields=date_obs,resultat_obs`);
       const data = await res.json();
       if (data?.data?.length > 0) {
-        const last = data.data[0];
-        const m3s = (last.resultat_obs / 1000).toFixed(0);
-        const h   = new Date(last.date_obs).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+        const last   = data.data[0];
+        const m3s    = (last.resultat_obs / 1000).toFixed(0);
+        const obsDate = new Date(last.date_obs);
+        const dateStr = obsDate.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+        const heureStr = obsDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
         document.getElementById('rhone-debit').innerHTML = `${m3s}<span class="unit"> m³/s</span>`;
-        document.getElementById('rhone-heure').innerHTML = `Relevé ${h} <span style="opacity:0.55;font-size:0.85em">${STATIONS[idx]}</span>`;
+        document.getElementById('rhone-heure').textContent = `Relevé le ${dateStr} à ${heureStr}`;
+        document.getElementById('rhone-station').textContent = `#${STATIONS[idx]}`;
         const QMAX  = 4780;
         const QMOD  = 1060;
         const debit = parseInt(m3s);
