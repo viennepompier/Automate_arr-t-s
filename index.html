@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Vienne</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+  <style>
+    :root[data-theme="dark"] {
+      --bg: #0d0f12; --bg2: #13161a; --bg3: #1a1e24; --border: #242830;
+      --text: #f0f2f5; --muted: #5a6272; --muted2: #3a404e;
+      --red: #ff4444; --red-bg: rgba(255,68,68,0.10);
+      --amber: #ffaa00; --amber-bg: rgba(255,170,0,0.10);
+      --accent: #3b9eff; --accent-bg: rgba(59,158,255,0.10);
+      --blue: #3b9eff;
+      --grad-fade: linear-gradient(transparent, #0d0f12);
+    }
+    :root[data-theme="light"] {
+      --bg: #f0f2f5; --bg2: #ffffff; --bg3: #e4e7ec; --border: #d0d4dc;
+      --text: #0d0f12; --muted: #8892a4; --muted2: #c0c6d0;
+      --red: #cc2222; --red-bg: rgba(204,34,34,0.07);
+      --amber: #cc8800; --amber-bg: rgba(204,136,0,0.07);
+      --accent: #1a7fe0; --accent-bg: rgba(26,127,224,0.07);
+      --blue: #1a7fe0;
+      --grad-fade: linear-gradient(transparent, #f0f2f5);
+    }
+
+    :root {
+      --lieu-size:    clamp(13px, 2.4vw, 28px);
+      --meta-size:    clamp(10px, 1.7vw, 20px);
+      --pill-size:    clamp(8px,  1.4vw, 16px);
+      --clock-size:   clamp(28px, 6vw,   72px);
+      --date-size:    clamp(9px,  1.4vw, 17px);
+      --label-size:   clamp(8px,  1.2vw, 14px);
+      --count-size:   clamp(8px,  1.2vw, 14px);
+      --pill-val-size:   clamp(15px, 3vw, 36px);
+      --pill-label-size: clamp(7px, 1.1vw, 12px);
+      --pill-sub-size:   clamp(7px, 1.1vw, 12px);
+      --card-padding-v:  clamp(4px, 0.7vh, 10px);
+      --card-gap:        clamp(3px, 0.5vh, 8px);
+      --section-gap:     clamp(4px, 0.6vh, 10px);
+      --app-padding:     clamp(6px, 1vw,   16px);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+    }
+
+    /* ===== TRANSITION THÈME — fondu global lent et soigné ===== */
+    *, *::before, *::after {
+      transition:
+        background-color 0.9s ease,
+        color 0.7s ease,
+        border-color 0.7s ease,
+        box-shadow 0.7s ease !important;
+    }
+    /* Exceptions : animations qui ne doivent pas hériter du 0.9s */
+    .loader-bar { transition: width 0.3s linear !important; }
+    .scroll-progress-fill { transition: width 0.12s linear !important; }
+    .scroll-dot { transition: background-color 0.3s ease, transform 0.3s ease !important; }
+    .arretes-inner { transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1) !important; }
+    .arretes-inner.no-transition { transition: none !important; }
+
+    /* ===== BARRE DE CHARGEMENT ===== */
+    .loader-bar {
+      position: fixed; top: 0; left: 0;
+      height: 2px; width: 0%;
+      background: var(--accent);
+      transition: width 0.3s;
+      z-index: 300;
+    }
+
+    /* ===== LAYOUT ===== */
+    .app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      padding: var(--app-padding);
+      gap: var(--section-gap);
+    }
+
+    /* ===== HORLOGE ===== */
+    .clock-section {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: var(--section-gap);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .clock-time {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: var(--clock-size);
+      line-height: 1;
+      letter-spacing: 0.04em;
+    }
+
+    .clock-date {
+      font-size: var(--date-size);
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      flex: 1;
+      text-align: center;
+      padding: 0 10px;
+    }
+
+    /* Boutons header groupés */
+    .header-btns {
+      display: flex;
+      gap: clamp(4px, 0.6vw, 8px);
+      flex-shrink: 0;
+    }
+
+    .icon-btn {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: clamp(2px, 0.4vh, 5px) clamp(6px, 1vw, 12px);
+      font-size: clamp(11px, 1.8vw, 20px);
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      line-height: 1.4;
+      color: var(--text);
+    }
+    .icon-btn:hover { background: var(--border); }
+    .icon-btn:active { transform: scale(0.95); }
+
+    /* ===== ARRÊTÉS ===== */
+    .arretes-section {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--card-gap);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: clamp(4px, 0.7vw, 8px);
+      flex-shrink: 0;
+    }
+
+    .dot {
+      width: clamp(5px, 1vw, 9px);
+      height: clamp(5px, 1vw, 9px);
+      border-radius: 50%; flex-shrink: 0;
+    }
+    .dot.red   { background: var(--red);   box-shadow: 0 0 6px var(--red); animation: pulse 2s infinite; }
+    .dot.amber { background: var(--amber); box-shadow: 0 0 4px var(--amber); }
+
+    .section-header .label {
+      font-size: var(--label-size);
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .section-header .count {
+      margin-left: auto;
+      font-size: var(--count-size);
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      padding: 1px clamp(5px, 0.8vw, 9px);
+      border-radius: 20px;
+      color: var(--muted);
+    }
+
+    /* Indicateur de scroll — petits points de pagination */
+    .scroll-dots {
+      display: none;
+      gap: 4px;
+      margin-left: 8px;
+      align-items: center;
+    }
+    .scroll-dots.visible { display: flex; }
+    .scroll-dot {
+      width: clamp(4px, 0.6vw, 7px);
+      height: clamp(4px, 0.6vw, 7px);
+      border-radius: 50%;
+      background: var(--border);
+      transition: background 0.3s, transform 0.3s;
+      flex-shrink: 0;
+    }
+    .scroll-dot.active {
+      background: var(--accent);
+      transform: scale(1.25);
+    }
+
+    /* Barre de progression de scroll (ligne fine sous le header) */
+    .scroll-progress-bar {
+      height: 2px;
+      background: var(--border);
+      border-radius: 2px;
+      flex-shrink: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .scroll-progress-bar.visible { opacity: 1; }
+    .scroll-progress-fill {
+      height: 100%;
+      border-radius: 2px;
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+    .fill-red   { background: var(--red); }
+    .fill-amber { background: var(--amber); }
+
+    /* Groupe conteneur */
+    .arretes-group {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Dégradé bas quand overflow */
+    .arretes-group.overflow::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: clamp(28px, 4vh, 48px);
+      background: var(--grad-fade);
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .arretes-inner {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      gap: var(--card-gap);
+      /* transition fluide sur transform pour le scroll par carte */
+      transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    /* Quand le JS pilote image par image, on enlève la transition CSS pour rAnimFrame */
+    .arretes-inner.no-transition {
+      transition: none;
+    }
+
+    .arrete-card {
+    margin-bottom: 16px !important; /* Force l'espace ENTRE les cartes */
+    padding: 16px !important;       /* Ajoute de l'espace à l'INTÉRIEUR des cartes */
+    line-height: 1.5;               /* Espace un peu plus les lignes de texte */
+    border-radius: 12px;            /* Arrondit un peu plus les angles */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* Ajoute une toute petite ombre élégante */
+  }
+
+  /* Si le texte du motif est trop collé aux dates */
+  .arrete-motif {
+    display: block;
+    margin-top: 8px; 
+    color: var(--text);
+  }
+
+    .arrete-card.en-cours {
+      background: var(--red-bg);
+      border: 1px solid rgba(255,68,68,0.18);
+      border-left: clamp(3px, 0.4vw, 5px) solid var(--red);
+    }
+    .arrete-card.a-venir {
+      background: var(--amber-bg);
+      border: 1px solid rgba(255,170,0,0.18);
+      border-left: clamp(3px, 0.4vw, 5px) solid var(--amber);
+    }
+
+    .arrete-lieu {
+      font-weight: 600;
+      font-size: var(--lieu-size);
+      color: var(--text);
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .arrete-meta {
+      display: flex;
+      align-items: center;
+      gap: clamp(4px, 0.6vw, 8px);
+      margin-top: clamp(2px, 0.3vh, 5px);
+      overflow: hidden;
+    }
+
+    .arrete-dates {
+      font-size: var(--meta-size);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .arrete-motif {
+      font-size: var(--meta-size);
+      color: var(--muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+
+    .pill-mini {
+      font-size: var(--pill-size);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 1px clamp(4px, 0.6vw, 8px);
+      border-radius: 20px;
+      flex-shrink: 0;
+    }
+    .pill-mini.red   { background: var(--red-bg);   color: var(--red);   border: 1px solid rgba(255,68,68,0.3); }
+    .pill-mini.amber { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(255,170,0,0.3); }
+
+    .empty-msg {
+      font-size: var(--meta-size);
+      color: var(--muted2);
+      font-style: italic;
+      padding: clamp(4px, 0.6vh, 8px) 0;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      flex-shrink: 0;
+      margin: clamp(1px, 0.2vh, 3px) 0;
+    }
+
+    /* ===== BARRE INFÉRIEURE — deux pills côte à côte ===== */
+    .info-bar {
+      flex-shrink: 0;
+      display: flex;
+      gap: clamp(4px, 0.7vw, 10px);
+    }
+
+    /* Pill générique */
+    .info-pill {
+      flex: 1;
+      min-width: 0;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: clamp(8px, 1.2vw, 14px);
+      padding: clamp(5px, 0.9vh, 11px) clamp(8px, 1.3vw, 16px);
+      display: flex;
+      align-items: center;
+      gap: clamp(6px, 1vw, 12px);
+      overflow: hidden;
+    }
+
+    /* Icône principale de chaque pill */
+    .pill-icon {
+      font-size: clamp(16px, 2.8vw, 30px);
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    /* Bloc texte central */
+    .pill-body {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .pill-label {
+      font-size: var(--pill-label-size);
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .pill-value {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: var(--pill-val-size);
+      line-height: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .pill-value.blue  { color: var(--blue); }
+    .pill-value.accent{ color: var(--accent); }
+
+    .pill-value .unit {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(8px, 1.2vw, 14px);
+      font-weight: 400;
+      color: var(--muted);
+    }
+
+    .pill-sub {
+      font-size: var(--pill-sub-size);
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Badge de niveau (Rhône) et pluie (Météo) — à droite */
+    .pill-badge {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: clamp(2px, 0.3vh, 5px);
+    }
+
+    /* Barre de niveau Rhône — côté droit de la pill */
+    .rhone-level-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: clamp(2px, 0.3vh, 4px);
+      flex-shrink: 0;
+      height: 100%;
+      justify-content: center;
+    }
+
+    .rhone-level-bar {
+      width: clamp(6px, 1vw, 11px);
+      height: clamp(36px, 6vh, 72px);
+      background: var(--bg3);
+      border-radius: 99px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid var(--border);
+    }
+
+    .rhone-level-fill {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      border-radius: 99px;
+      transition: height 1.2s cubic-bezier(0.4, 0, 0.2, 1),
+                  background-color 0.9s ease;
+    }
+
+    /* Marqueur module (débit normal) */
+    .rhone-level-bar::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0;
+      /* module = 1060/4780 ≈ 22.2% depuis le bas */
+      bottom: 22%;
+      height: 1px;
+      background: var(--border);
+      opacity: 0.7;
+    }
+
+    .rhone-level-pct {
+      font-size: clamp(6px, 0.9vw, 10px);
+      font-weight: 700;
+      color: var(--muted);
+      text-align: center;
+      white-space: nowrap;
+    }
+
+
+
+    /* Bouton plein écran */
+    #btn-fullscreen::before { content: '⛶'; }
+
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    #list-en-cours, #list-a-venir {
+    height: 42vh !important;       /* 42% de l'écran (laisse de la place pour la météo/débit) */
+    min-height: 250px !important;  /* Interdit de s'écraser en dessous de cette taille */
+    overflow-y: auto !important;   /* Active le défilement */
+    padding-right: 8px !important;
+  }
+
+  /* 2. On libère totalement l'intérieur pour que les cartes respirent */
+  #inner-en-cours, #inner-a-venir {
+    height: auto !important;
+    max-height: none !important;   /* Tue l'ancienne limite qui écrasait tout */
+    overflow: visible !important;
+  }
+
+  /* 3. Design de la barre de scroll */
+  #list-en-cours::-webkit-scrollbar, #list-a-venir::-webkit-scrollbar { width: 6px; }
+  #list-en-cours::-webkit-scrollbar-thumb, #list-a-venir::-webkit-scrollbar-thumb { background-color: var(--muted); border-radius: 10px; }
+  </style>
+</head>
+<body>
+
+<div class="loader-bar" id="loader-bar"></div>
+
+<div class="app">
+
+  <!-- HORLOGE -->
+  <div class="clock-section">
+    <div class="clock-time" id="clock-time">00:00:00</div>
+    <div class="clock-date" id="clock-date">—</div>
+    <div class="header-btns">
+      <button class="icon-btn" id="btn-theme" title="Thème">🌙</button>
+      <button class="icon-btn" id="btn-fullscreen" title="Plein écran travaux"></button>
+    </div>
+  </div>
+
+  <!-- ARRÊTÉS -->
+  <div class="arretes-section" id="arretes-section">
+
+    <div class="section-header">
+      <div class="dot red"></div>
+      <span class="label">En cours</span>
+      <div class="scroll-dots" id="dots-en-cours"></div>
+      <span class="count" id="count-en-cours">—</span>
+    </div>
+    <div class="scroll-progress-bar" id="prog-en-cours">
+      <div class="scroll-progress-fill fill-red" id="prog-fill-en-cours"></div>
+    </div>
+    <div class="arretes-group" id="list-en-cours" style="flex:1">
+      <div class="arretes-inner" id="inner-en-cours">
+        <div class="empty-msg">Chargement...</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-header">
+      <div class="dot amber"></div>
+      <span class="label">À venir</span>
+      <div class="scroll-dots" id="dots-a-venir"></div>
+      <span class="count" id="count-a-venir">—</span>
+    </div>
+    <div class="scroll-progress-bar" id="prog-a-venir">
+      <div class="scroll-progress-fill fill-amber" id="prog-fill-a-venir"></div>
+    </div>
+    <div class="arretes-group" id="list-a-venir" style="flex:1">
+      <div class="arretes-inner" id="inner-a-venir">
+        <div class="empty-msg">Chargement...</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BARRE INFÉRIEURE : Rhône + Météo côte à côte -->
+  <div class="info-bar">
+
+    <!-- PILL RHÔNE -->
+    <div class="info-pill">
+      <div class="pill-icon">🌊</div>
+      <div class="pill-body">
+        <div class="pill-label">Rhône · Ternay</div>
+        <div class="pill-value blue" id="rhone-debit">—<span class="unit"> m³/s</span></div>
+
+      </div>
+      <div class="rhone-level-wrap">
+        <div class="rhone-level-bar">
+          <div class="rhone-level-fill" id="rhone-level-fill" style="height:0%;background:var(--muted2)"></div>
+        </div>
+        <div class="rhone-level-pct" id="rhone-level-pct">—</div>
+      </div>
+    </div>
+
+    <!-- PILL MÉTÉO -->
+    <div class="info-pill">
+      <div class="pill-icon" id="m-icon">⛅</div>
+      <div class="pill-body">
+        <div class="pill-label">Météo · Vienne</div>
+        <div class="pill-value accent" id="m-temp">—<span class="unit">°C</span></div>
+        <div class="pill-sub"         id="m-cond">Chargement…</div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxo4Y50C5QbthOZy1rRC7pT9FPMRIhtJOCOjFmqp3rBEK6Tv4Md8fT629Nki4WPY7REWw/exec";
+
+  // ===== HORLOGE =====
+  function updateClock() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2,'0');
+    const m = String(now.getMinutes()).padStart(2,'0');
+    const s = String(now.getSeconds()).padStart(2,'0');
+    document.getElementById('clock-time').textContent = `${h}:${m}:${s}`;
+    document.getElementById('clock-date').textContent = now.toLocaleDateString('fr-FR',{
+      weekday:'long', day:'numeric', month:'long'
+    });
+    if (h==='07' && m==='01' && s==='00') chargerArretes();
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // ===== THÈME — auto 20h→7h, override manuel =====
+  const htmlEl   = document.documentElement;
+  const btnTheme = document.getElementById('btn-theme');
+
+  // Détermine si on est dans la plage nuit (20h–7h)
+  function estNuit() {
+    const h = new Date().getHours();
+    return h >= 20 || h < 7;
+  }
+
+  // Applique un thème avec un fondu : on ajoute une classe qui bloque
+  // la transition le temps d'initialiser, puis on laisse faire le CSS
+  function appliquerTheme(theme, withTransition) {
+    if (!withTransition) {
+      // Premier chargement : pas de transition pour éviter le flash
+      document.body.style.transition = 'none';
+      htmlEl.querySelectorAll('*').forEach(el => el.style.transition = 'none');
+    }
+    htmlEl.setAttribute('data-theme', theme);
+    btnTheme.textContent = theme === 'dark' ? '☀️' : '🌙';
+    btnTheme.title = theme === 'dark' ? 'Passer en clair' : 'Passer en sombre';
+    if (!withTransition) {
+      // Réactive les transitions après un frame
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          document.body.style.transition = '';
+          htmlEl.querySelectorAll('*').forEach(el => el.style.transition = '');
+        });
+      });
+    }
+  }
+
+  // Gestion de l'override manuel :
+  // - overrideTheme : 'dark' | 'light' | null (null = mode auto)
+  // - overrideUntil : timestamp (heure) jusqu'à quand l'override est actif
+  //   → se réinitialise automatiquement au prochain basculement auto (20h ou 7h)
+  let overrideTheme = localStorage.getItem('themeOverride') || null;
+  let overrideUntil = parseInt(localStorage.getItem('themeOverrideUntil') || '0');
+
+  function themeActuel() {
+    const now = Date.now();
+    // Override encore valide ?
+    if (overrideTheme && now < overrideUntil) return overrideTheme;
+    // Sinon mode auto
+    return estNuit() ? 'dark' : 'light';
+  }
+
+  // Vérifie toutes les minutes si on doit basculer automatiquement
+  function verifierThemeAuto() {
+    const attendu = estNuit() ? 'dark' : 'light';
+    const actuel  = htmlEl.getAttribute('data-theme');
+    // Si l'heure a changé de plage → on annule l'override et on bascule
+    if (actuel !== attendu) {
+      const now = Date.now();
+      if (!overrideTheme || now >= overrideUntil) {
+        overrideTheme = null;
+        overrideUntil = 0;
+        localStorage.removeItem('themeOverride');
+        localStorage.removeItem('themeOverrideUntil');
+        appliquerTheme(attendu, true);
+      }
+    }
+  }
+
+  // Bouton manuel : override jusqu'au prochain basculement auto
+  btnTheme.addEventListener('click', () => {
+    const actuel = htmlEl.getAttribute('data-theme');
+    const next   = actuel === 'dark' ? 'light' : 'dark';
+
+    // L'override expire au prochain basculement (20h00 ou 07h00)
+    const now = new Date();
+    const nextSwitch = new Date();
+    if (next === 'dark') {
+      // On vient de passer en sombre manuellement → expire à la prochaine 7h
+      nextSwitch.setHours(7, 0, 0, 0);
+      if (nextSwitch <= now) nextSwitch.setDate(nextSwitch.getDate() + 1);
+    } else {
+      // On vient de passer en clair manuellement → expire à la prochaine 20h
+      nextSwitch.setHours(20, 0, 0, 0);
+      if (nextSwitch <= now) nextSwitch.setDate(nextSwitch.getDate() + 1);
+    }
+
+    overrideTheme = next;
+    overrideUntil = nextSwitch.getTime();
+    localStorage.setItem('themeOverride',      overrideTheme);
+    localStorage.setItem('themeOverrideUntil', String(overrideUntil));
+
+    appliquerTheme(next, true);
+  });
+
+  // Init sans transition (chargement de page)
+  appliquerTheme(themeActuel(), false);
+
+  // Vérifie toutes les minutes le basculement auto
+  setInterval(verifierThemeAuto, 60 * 1000);
+
+  // ===== MODE PLEIN ÉCRAN (Fullscreen API native) =====
+  const btnFS = document.getElementById('btn-fullscreen');
+
+  function recalibrerEtScroll() {
+    const ec = parseInt(document.getElementById('count-en-cours').textContent) || 0;
+    const av = parseInt(document.getElementById('count-a-venir').textContent)  || 0;
+    calibrer(ec, av);
+    setTimeout(() => {
+      activerScroll('list-en-cours', 'inner-en-cours', 'dots-en-cours', 'prog-fill-en-cours', 'prog-en-cours');
+      activerScroll('list-a-venir',  'inner-a-venir',  'dots-a-venir',  'prog-fill-a-venir',  'prog-a-venir');
+    }, 150);
+  }
+
+  function isFullscreen() {
+    return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement);
+  }
+
+  function toggleFullscreen() {
+    if (!isFullscreen()) {
+      const el = document.documentElement;
+      if (el.requestFullscreen)       el.requestFullscreen();
+      else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+      else if (el.mozRequestFullScreen)    el.mozRequestFullScreen();
+    } else {
+      if (document.exitFullscreen)       document.exitFullscreen();
+      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      else if (document.mozCancelFullScreen)  document.mozCancelFullScreen();
+    }
+  }
+
+  btnFS.addEventListener('click', toggleFullscreen);
+
+  // Met à jour l'icône du bouton selon l'état réel
+  function onFullscreenChange() {
+    const full = isFullscreen();
+    btnFS.title = full ? 'Quitter le plein écran' : 'Plein écran';
+    // Recalibre car les dimensions changent en entrant/sortant du plein écran
+    setTimeout(recalibrerEtScroll, 200);
+  }
+
+  document.addEventListener('fullscreenchange',       onFullscreenChange);
+  document.addEventListener('webkitfullscreenchange', onFullscreenChange);
+  document.addEventListener('mozfullscreenchange',    onFullscreenChange);
+
+  // ===== CALIBRAGE ADAPTATIF =====
+  function calibrer(nbEC, nbAV) {
+    const root  = document.documentElement;
+    const total = nbEC + nbAV;
+    const vw    = window.innerWidth;
+    const vh    = window.innerHeight;
+
+    const groupEC = document.getElementById('list-en-cours');
+    const groupAV = document.getElementById('list-a-venir');
+    groupEC.style.flex = String(Math.max(nbEC, 1));
+    groupAV.style.flex = String(Math.max(nbAV, 1));
+
+    const espaceDispo = vh * 0.68;
+
+    function estimerHauteurCarte(lieuPx, metaPx, paddingV, gap) {
+      return lieuPx * 1.3 + metaPx * 1.5 + paddingV * 2 + 4 + gap;
+    }
+
+    const headersFixes = vh * 0.09;
+
+    const niveaux = [
+      { lieu: Math.round(vw*0.040), meta: Math.round(vw*0.028), pill: Math.round(vw*0.022), gap: Math.round(vh*0.009), padV: Math.round(vh*0.011) },
+      { lieu: Math.round(vw*0.035), meta: Math.round(vw*0.025), pill: Math.round(vw*0.020), gap: Math.round(vh*0.008), padV: Math.round(vh*0.010) },
+      { lieu: Math.round(vw*0.030), meta: Math.round(vw*0.022), pill: Math.round(vw*0.017), gap: Math.round(vh*0.007), padV: Math.round(vh*0.009) },
+      { lieu: Math.round(vw*0.026), meta: Math.round(vw*0.019), pill: Math.round(vw*0.015), gap: Math.round(vh*0.006), padV: Math.round(vh*0.008) },
+      { lieu: Math.round(vw*0.022), meta: Math.round(vw*0.016), pill: Math.round(vw*0.013), gap: Math.round(vh*0.005), padV: Math.round(vh*0.007) },
+      { lieu: Math.round(vw*0.019), meta: Math.round(vw*0.014), pill: Math.round(vw*0.011), gap: Math.round(vh*0.004), padV: Math.round(vh*0.006) },
+      { lieu: Math.round(vw*0.016), meta: Math.round(vw*0.012), pill: Math.round(vw*0.010), gap: Math.round(vh*0.004), padV: Math.round(vh*0.005) },
+      { lieu: Math.round(vw*0.014), meta: Math.round(vw*0.011), pill: Math.round(vw*0.009), gap: Math.round(vh*0.003), padV: Math.round(vh*0.004) },
+    ];
+
+    const minLieu = Math.max(12, Math.round(vw * 0.013));
+    const minMeta = Math.max(9,  Math.round(vw * 0.010));
+
+    let lieuPx = minLieu, metaPx = minMeta, pillPx = minMeta, gapPx = 3, paddingV = 4;
+
+    for (const n of niveaux) {
+      const hCarte = estimerHauteurCarte(n.lieu, n.meta, n.padV, n.gap);
+      const totalH = hCarte * total + headersFixes;
+      if (totalH <= espaceDispo) {
+        lieuPx = n.lieu; metaPx = n.meta; pillPx = n.pill;
+        gapPx = n.gap; paddingV = n.padV;
+        break;
+      }
+    }
+
+    root.style.setProperty('--lieu-size',       Math.max(lieuPx, minLieu) + 'px');
+    root.style.setProperty('--meta-size',        Math.max(metaPx, minMeta) + 'px');
+    root.style.setProperty('--pill-size',        Math.max(pillPx, minMeta) + 'px');
+    root.style.setProperty('--card-gap',         gapPx + 'px');
+    root.style.setProperty('--card-padding-v',   paddingV + 'px');
+    root.style.setProperty('--clock-size',       clampVal(vw*0.09,  24, 72) + 'px');
+    root.style.setProperty('--date-size',        clampVal(vw*0.022, 9,  20) + 'px');
+    root.style.setProperty('--label-size',       clampVal(vw*0.018, 8,  16) + 'px');
+    root.style.setProperty('--count-size',       clampVal(vw*0.016, 7,  14) + 'px');
+    root.style.setProperty('--pill-val-size',    clampVal(vw*0.048, 13, 38) + 'px');
+    root.style.setProperty('--pill-label-size',  clampVal(vw*0.016, 7,  13) + 'px');
+    root.style.setProperty('--pill-sub-size',    clampVal(vw*0.016, 7,  13) + 'px');
+    root.style.setProperty('--app-padding',      clampVal(vw*0.018, 6,  18) + 'px');
+    root.style.setProperty('--section-gap',      clampVal(vh*0.008, 4,  12) + 'px');
+  }
+
+  function clampVal(val, min, max) {
+    return Math.max(min, Math.min(max, Math.round(val)));
+  }
+
+  window.addEventListener('resize', recalibrerEtScroll);
+
+  // ===== ARRÊTÉS =====
+async function chargerArretes() {
+  try {
+    const res = await fetch(APPS_SCRIPT_URL);
+    const donnees = await res.json();
+
+    // Petite fonction pour pouvoir trier les dates
+    function parseDate(str) {
+      if (!str || str === 'N/A') return new Date(2099,0,1);
+      if (str.includes('/')) {
+        const [d, m, y] = str.split('/');
+        return new Date(+y, +m - 1, +d);
+      }
+      return new Date(str);
+    }
+
+    // 1. On sépare en utilisant les noms exacts des colonnes du Google Sheet
+    const enCours = donnees
+      .filter(a => a['Statut'] === "En cours")
+      .sort((a, b) => parseDate(a['Date Fin']) - parseDate(b['Date Fin']));
+      
+    const aVenir = donnees
+      .filter(a => a['Statut'] === "À venir")
+      .sort((a, b) => parseDate(a['Date Début']) - parseDate(b['Date Début']));
+
+    // 2. Mise à jour des compteurs ronds
+    document.getElementById('count-en-cours').textContent = enCours.length;
+    document.getElementById('count-a-venir').textContent = aVenir.length;
+
+    // 3. Fonction pour dessiner les cartes de ton ami
+    const creerCartesHTML = (liste, cssClass, pillClass, etiquette) => {
+      if (liste.length === 0) return '<div class="empty-msg">Aucun arrêté</div>';
+      return liste.map(arrete => `
+        <div class="arrete-card ${cssClass}">
+          <div class="arrete-lieu">📍 ${arrete['Lieu']}</div>
+          <div class="arrete-meta">
+            <span class="pill-mini ${pillClass}">${etiquette}</span>
+            <span class="arrete-dates">📅 ${arrete['Date Début']} → ${arrete['Date Fin']}</span>
+            <span class="arrete-motif">${arrete['Motif']}</span>
+          </div>
+        </div>
+      `).join('');
+    };
+
+    // 4. On injecte dans les conteneurs
+    const containerEnCours = document.getElementById('inner-en-cours');
+    if (containerEnCours) containerEnCours.innerHTML = creerCartesHTML(enCours, 'en-cours', 'red', 'EN COURS');
+    
+    const containerAVenir = document.getElementById('inner-a-venir');
+    if (containerAVenir) containerAVenir.innerHTML = creerCartesHTML(aVenir, 'a-venir', 'amber', 'À VENIR');
+
+    // 5. On relance le moteur de défilement de ton ami s'il existe
+    if (typeof calibrer === "function") {
+        setTimeout(() => calibrer(enCours.length, aVenir.length), 100);
+    }
+
+  } catch (err) {
+    console.error("Erreur de chargement des arrêtés :", err);
+    // En cas d'erreur, on affiche au moins un message vide
+    document.getElementById('inner-en-cours').innerHTML = '<div class="empty-msg">Erreur de connexion</div>';
+    document.getElementById('inner-a-venir').innerHTML = '<div class="empty-msg">Erreur de connexion</div>';
+  }
+}
+
+  // ===== SCROLL CARTE PAR CARTE =====
+  /*
+   * Logique :
+   *   1. On calcule combien de cartes sont visibles à la fois dans le groupe (pageSize)
+   *   2. On fait défiler UNE PAGE à la fois (pas un pixel continu)
+   *   3. Entre chaque page : pause de lecture longue, puis transition douce
+   *   4. Points de pagination + barre de progression visibles si scroll actif
+   *   5. Retour en haut avec transition inverse douce
+   */
+  const scrollStates = {};
+
+  function activerScroll(groupId, innerId, dotsId, progFillId, progBarId) {
+    const group   = document.getElementById(groupId);
+    const inner   = document.getElementById(innerId);
+    const dotsEl  = document.getElementById(dotsId);
+    const progFill= document.getElementById(progFillId);
+    const progBar = document.getElementById(progBarId);
+    if (!group || !inner) return;
+
+    // Arrête l'animation précédente proprement
+    const prev = scrollStates[groupId];
+    if (prev) {
+      clearTimeout(prev.timer);
+      delete scrollStates[groupId];
+    }
+
+    inner.style.transform = 'translateY(0)';
+    inner.classList.remove('no-transition');
+    dotsEl.innerHTML = '';
+    dotsEl.classList.remove('visible');
+    progBar.classList.remove('visible');
+    progFill.style.width = '0%';
+
+    // Attend le prochain frame pour avoir les vraies dimensions
+    requestAnimationFrame(() => {
+      const groupH = group.clientHeight;
+      const innerH = inner.scrollHeight;
+
+      if (innerH <= groupH + 4) {
+        // Tout tient → statique
+        group.classList.remove('overflow');
+        return;
+      }
+
+      group.classList.add('overflow');
+
+      // Calcule la hauteur d'une carte + gap pour le défilement page-par-page
+      const cards = inner.querySelectorAll('.arrete-card');
+      if (!cards.length) return;
+
+      const cardH    = cards[0].offsetHeight;
+      const gapPx    = parseFloat(getComputedStyle(inner).gap) || 4;
+      const unitH    = cardH + gapPx;  // hauteur d'une unité de scroll
+
+      // Combien de cartes visibles à la fois
+      const visibles  = Math.max(1, Math.floor(groupH / unitH));
+      const totalCards= cards.length;
+      // Positions de chaque "page" (scroll par bloc de `visibles` cartes)
+      const positions = [];
+      for (let i = 0; i < totalCards; i += visibles) {
+        positions.push(Math.min(i * unitH, innerH - groupH));
+      }
+      // Déduplique la dernière position si identique
+      const pages = [...new Set(positions)];
+      const nbPages = pages.length;
+
+      if (nbPages <= 1) {
+        group.classList.remove('overflow');
+        inner.style.transform = 'translateY(0)';
+        return;
+      }
+
+      // Construit les dots de pagination
+      dotsEl.innerHTML = '';
+      pages.forEach((_, i) => {
+        const d = document.createElement('div');
+        d.className = 'scroll-dot' + (i === 0 ? ' active' : '');
+        dotsEl.appendChild(d);
+      });
+      dotsEl.classList.add('visible');
+      progBar.classList.add('visible');
+
+      let currentPage = 0;
+
+      function updateUI() {
+        // Dots
+        dotsEl.querySelectorAll('.scroll-dot').forEach((d, i) => {
+          d.classList.toggle('active', i === currentPage);
+        });
+        // Barre de progression
+        const pct = nbPages <= 1 ? 100 : (currentPage / (nbPages - 1)) * 100;
+        progFill.style.width = pct + '%';
+      }
+
+      function scrollToPage(pageIdx, onDone) {
+        const targetY = pages[pageIdx];
+        // On utilise la transition CSS (0.55s cubic-bezier déjà définie)
+        inner.classList.remove('no-transition');
+        inner.style.transform = `translateY(${-targetY}px)`;
+        // Attend la fin de la transition avant de continuer
+        const onEnd = () => {
+          inner.removeEventListener('transitionend', onEnd);
+          if (onDone) onDone();
+        };
+        inner.addEventListener('transitionend', onEnd);
+      }
+
+      // Durée de lecture par page (ms) :
+      // Minimum 4s, +0.8s par carte visible (pour laisser le temps de lire)
+      const tempsLecture = Math.max(4000, visibles * 900);
+      const tempsPauseBas = 2500;
+
+      function cycle() {
+        if (!scrollStates[groupId]) return; // annulé
+
+        if (currentPage < nbPages - 1) {
+          // Passe à la page suivante
+          currentPage++;
+          updateUI();
+          scrollToPage(currentPage, () => {
+            // Pause lecture sur cette page
+            scrollStates[groupId].timer = setTimeout(cycle, tempsLecture);
+          });
+        } else {
+          // Dernière page atteinte → pause puis retour haut
+          scrollStates[groupId].timer = setTimeout(() => {
+            if (!scrollStates[groupId]) return;
+            currentPage = 0;
+            updateUI();
+            scrollToPage(0, () => {
+              // Pause en haut avant de recommencer
+              scrollStates[groupId].timer = setTimeout(cycle, tempsLecture);
+            });
+          }, tempsPauseBas);
+        }
+      }
+
+      scrollStates[groupId] = {};
+      updateUI();
+
+      // Délai initial (pause de lecture sur la première page)
+      scrollStates[groupId].timer = setTimeout(cycle, tempsLecture);
+    });
+  }
+
+  // ===== MÉTÉO (condition actuelle + pluie proche) =====
+  const WMO_ICONS = {
+    0:'☀️',1:'🌤',2:'⛅',3:'☁️',
+    45:'🌫',48:'🌫',51:'🌦',53:'🌦',55:'🌧',
+    61:'🌧',63:'🌧',65:'🌧',71:'❄️',73:'❄️',75:'❄️',
+    80:'🌦',81:'🌧',82:'⛈',95:'⛈',96:'⛈',99:'⛈'
+  };
+  const WMO_LABELS = {
+    0:'Ensoleillé',1:'Peu nuageux',2:'Partiellement nuageux',3:'Couvert',
+    45:'Brouillard',48:'Brouillard givrant',51:'Bruine légère',53:'Bruine',55:'Bruine forte',
+    61:'Pluie légère',63:'Pluie',65:'Pluie forte',71:'Neige légère',73:'Neige',75:'Neige forte',
+    80:'Averses légères',81:'Averses',82:'Averses fortes',95:'Orage',96:'Orage avec grêle',99:'Orage violent'
+  };
+
+  async function chargerMeteo() {
+    try {
+      const url = "https://api.open-meteo.com/v1/forecast?latitude=45.5228&longitude=4.8742&current=temperature_2m,weathercode&timezone=Europe%2FParis";
+      const res  = await fetch(url);
+      const data = await res.json();
+
+      const tempActu = Math.round(data.current.temperature_2m * 10) / 10;
+      const codeActu = data.current.weathercode;
+
+      // Valeur de la pill : température sans HTML (Bebas Neue n'a pas de sup)
+      document.getElementById('m-temp').innerHTML = `${tempActu}<span class="unit">°C</span>`;
+      document.getElementById('m-icon').textContent = WMO_ICONS[codeActu] || '🌤';
+      document.getElementById('m-cond').textContent = WMO_LABELS[codeActu] || '—';
+
+
+    } catch(e) {
+      document.getElementById('m-cond').textContent = '⚠ Indisponible';
+    }
+  }
+
+  // ===== DÉBIT RHÔNE =====
+  const STATIONS = ["V303002002","V303002001"];
+  async function chargerDebit(idx = 0) {
+    if (idx >= STATIONS.length) {
+      document.getElementById('rhone-debit').innerHTML = '—<span class="unit"> m³/s</span>';
+      document.getElementById('rhone-level-fill').style.height = '0%';
+      document.getElementById('rhone-level-pct').textContent = '—';
+      return;
+    }
+    try {
+      const res  = await fetch(`https://hubeau.eaufrance.fr/api/v2/hydrometrie/observations_tr?code_entite=${STATIONS[idx]}&grandeur_hydro=Q&size=1&sort=desc&fields=date_obs,resultat_obs`);
+      const data = await res.json();
+      if (data?.data?.length > 0) {
+        const last = data.data[0];
+        const m3s = (last.resultat_obs / 1000).toFixed(0);
+        const h   = new Date(last.date_obs).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+        document.getElementById('rhone-debit').innerHTML = `${m3s}<span class="unit"> m³/s</span>`;
+
+        // Barre de niveau
+        // Repères station Ternay (fiche officielle DREAL) :
+        //   étiage QMNA5 : 372 m³/s — module : 1 060 m³/s — max historique : 4 780 m³/s
+        const QMAX   = 4780;
+        const QMOD   = 1060;
+        const QETIAGE = 372;
+        const debit  = parseInt(m3s);
+        const pct    = Math.min(100, Math.max(1, (debit / QMAX) * 100));
+
+        // Couleur : bleu en dessous du module, amber entre module et 60%, rouge au-delà
+        let fillColor;
+        if (debit <= QMOD)        fillColor = 'var(--accent)';   // normal / bas
+        else if (pct < 50)        fillColor = 'var(--amber)';    // élevé
+        else                      fillColor = 'var(--red)';      // crue
+
+        const fillEl = document.getElementById('rhone-level-fill');
+        const pctEl  = document.getElementById('rhone-level-pct');
+        fillEl.style.height = pct.toFixed(1) + '%';
+        fillEl.style.background = fillColor;
+        pctEl.textContent = Math.round(pct) + '%';
+        pctEl.style.color = fillColor;
+      } else { chargerDebit(idx+1); }
+    } catch(e) { chargerDebit(idx+1); }
+  }
+
+  // ===== INIT =====
+  calibrer(0, 0);
+  chargerArretes();
+  chargerMeteo();
+  chargerDebit();
+  setInterval(chargerArretes, 5  * 60 * 1000);
+  setInterval(chargerMeteo,   30 * 60 * 1000);
+  setInterval(chargerDebit,   10 * 60 * 1000);
+
+  const URL_API_GOOGLE = "https://script.google.com/macros/s/AKfycbxo4Y50C5QbthOZy1rRC7pT9FPMRIhtJOCOjFmqp3rBEK6Tv4Md8fT629Nki4WPY7REWw/exec";
+
+fetch(URL_API_GOOGLE)
+      .then(response => response.json())
+      .then(donnees => {
+        
+        // 1. On sépare les arrêtés en fonction du "Statut" dans ton Google Sheet
+        const enCours = donnees.filter(a => a['Statut'] === "En cours" || a['Statut'] === "Sans date")
+        const aVenir = donnees.filter(d => d.Statut === "À venir");
+
+        // 2. On met à jour les petits compteurs ronds en haut de l'application
+        const countEnCoursEl = document.getElementById('count-en-cours');
+        if (countEnCoursEl) countEnCoursEl.textContent = enCours.length;
+        
+        const countAVenirEl = document.getElementById('count-a-venir');
+        if (countAVenirEl) countAVenirEl.textContent = aVenir.length;
+
+        // 3. Fonction pour créer les "cartes" avec le design original de ton ami
+        const creerCartesHTML = (liste, cssClass, pillClass, etiquette) => {
+          if (liste.length === 0) return '<div class="empty-msg">Aucun arrêté</div>';
+          
+          return liste.map(arrete => `
+            <div class="arrete-card ${cssClass}">
+              <div class="arrete-lieu">📍 ${arrete.Lieu}</div>
+              <div class="arrete-meta">
+                <span class="pill-mini ${pillClass}">${etiquette}</span>
+                <span class="arrete-dates">📅 ${arrete['Date Début']} → ${arrete['Date Fin']}</span>
+                <span class="arrete-motif">${arrete.Motif}</span>
+              </div>
+            </div>
+          `).join('');
+        };
+
+        // 4. On injecte les cartes dans les bons conteneurs de l'application
+        const containerEnCours = document.getElementById('inner-en-cours'); 
+        if (containerEnCours) {
+            containerEnCours.innerHTML = creerCartesHTML(enCours, 'en-cours', 'red', 'EN COURS');
+        }
+
+        const containerAVenir = document.getElementById('inner-a-venir');
+        if (containerAVenir) {
+            containerAVenir.innerHTML = creerCartesHTML(aVenir, 'a-venir', 'amber', 'À VENIR');
+        }
+
+        // 5. Relance le calcul des défilements (scroll) si nécessaire
+        if (typeof calibrer === "function") {
+            calibrer(enCours.length, aVenir.length);
+        }
+      })
+      .catch(erreur => console.error("Erreur de chargement :", erreur));
+
+// Rafraîchir l'application automatiquement toutes les heures (3 600 000 millisecondes)
+setInterval(chargerArretes, 3600000);
+
+// Lance le premier chargement quand la page s'ouvre
+chargerArretes();
+
+</script>
+</body>
+</html>
