@@ -14,7 +14,6 @@
       --amber: #ffaa00; --amber-bg: rgba(255,170,0,0.08); --amber-border: rgba(255,170,0,0.22);
       --accent: #3b9eff; --accent-bg: rgba(59,158,255,0.10);
       --blue: #3b9eff;
-      --grad-fade: linear-gradient(transparent, #0d0f12);
       --header-bg: rgba(13,15,18,0.95);
       --shadow: 0 2px 12px rgba(0,0,0,0.35);
     }
@@ -25,12 +24,10 @@
       --amber: #c47d00; --amber-bg: rgba(196,125,0,0.06); --amber-border: rgba(196,125,0,0.2);
       --accent: #1a7fe0; --accent-bg: rgba(26,127,224,0.07);
       --blue: #1a7fe0;
-      --grad-fade: linear-gradient(transparent, #eef1f5);
       --header-bg: rgba(238,241,245,0.96);
       --shadow: 0 2px 10px rgba(0,0,0,0.08);
     }
 
-    /* ===== TRANSITIONS THÈME ===== */
     *, *::before, *::after {
       transition:
         background-color 0.9s ease,
@@ -44,7 +41,10 @@
     .arretes-inner         { transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1) !important; }
     .arretes-inner.no-transition { transition: none !important; }
 
-    /* ===== BASE ===== */
+    /* Slider à-venir */
+    .slider-track          { transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important; }
+    .slider-track.no-anim  { transition: none !important; }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { width: 100%; height: 100%; overflow: hidden; }
 
@@ -55,7 +55,6 @@
       height: 100vh;
     }
 
-    /* ===== VARIABLES DYNAMIQUES ===== */
     :root {
       --lieu-size:        clamp(14px, 2.6vw, 30px);
       --meta-size:        clamp(11px, 1.8vw, 20px);
@@ -74,7 +73,6 @@
       --badge-size:       clamp(9px,  1.3vw, 15px);
     }
 
-    /* ===== LOADER ===== */
     .loader-bar {
       position: fixed; top: 0; left: 0;
       height: 3px; width: 0%;
@@ -197,7 +195,7 @@
       flex-shrink: 0;
     }
 
-    /* Dots de pagination */
+    /* Dots de pagination — en-cours */
     .scroll-dots {
       display: none;
       gap: 4px;
@@ -216,7 +214,7 @@
       transform: scale(1.3);
     }
 
-    /* Barre de progression */
+    /* Barre de progression — en-cours */
     .scroll-progress-bar {
       height: 3px;
       background: var(--muted2);
@@ -234,17 +232,13 @@
     .fill-red   { background: var(--red); }
     .fill-amber { background: var(--amber); }
 
-    /* ===== GROUPE CARTES — hauteur égale pour en-cours et à-venir ===== */
-    .arretes-group {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
+    /* ===== GROUPE EN-COURS — prioritaire, grande hauteur ===== */
+    .en-cours-group {
+      flex: 3;
       min-height: 0;
       overflow: hidden;
       position: relative;
     }
-
-    /* Pas de dégradé de fondu — supprimé pour meilleure lisibilité */
 
     .arretes-inner {
       display: flex;
@@ -252,9 +246,94 @@
       width: 100%;
       gap: var(--card-gap);
     }
-    .arretes-inner.no-transition { transition: none; }
 
-    /* ===== CARTE ARRÊTÉ — REDESIGN 2.0 ===== */
+    /* ===== SÉPARATEUR ===== */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+
+    /* ===== SECTION À-VENIR — compacte, slider ===== */
+    .a-venir-section {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--card-gap);
+      min-height: 0;
+    }
+
+    /* Slider container : une seule carte visible */
+    .slider-viewport {
+      overflow: hidden;
+      position: relative;
+      border-radius: 10px;
+      /* hauteur = une carte, calculée dynamiquement */
+    }
+
+    .slider-track {
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      /* largeur totale = nb cartes × 100% */
+    }
+
+    .slider-card {
+      flex-shrink: 0;
+      width: 100%;
+      background: var(--amber-bg);
+      border: 1px solid var(--amber-border);
+      border-left: 4px solid var(--amber);
+      border-radius: 10px;
+      padding: clamp(6px, 0.8vh, 11px) clamp(8px, 1.2vw, 14px);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: clamp(3px, 0.4vh, 5px);
+    }
+
+    /* Texte réduit dans le slider à-venir */
+    .slider-card .arrete-lieu  { font-size: clamp(12px, 1.8vw, 20px); }
+    .slider-card .arrete-dates { font-size: clamp(10px, 1.3vw, 15px); }
+    .slider-card .arrete-motif { font-size: clamp(10px, 1.3vw, 15px); }
+
+    /* Indicateurs slider à-venir dans le header */
+    .slider-indicators {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-left: 8px;
+    }
+
+    .slider-pip {
+      width: clamp(5px, 0.7vw, 8px);
+      height: clamp(5px, 0.7vw, 8px);
+      border-radius: 50%;
+      background: var(--muted2);
+      flex-shrink: 0;
+    }
+    .slider-pip.active {
+      background: var(--amber);
+      transform: scale(1.3);
+    }
+
+    /* Barre de progression slider à-venir */
+    .slider-progress-bar {
+      height: 3px;
+      background: var(--muted2);
+      border-radius: 3px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .slider-progress-fill {
+      height: 100%;
+      background: var(--amber);
+      border-radius: 3px;
+      width: 0%;
+      transition: width 0.06s linear !important;
+    }
+
+    /* ===== CARTE ARRÊTÉ ===== */
     .arrete-card {
       background: var(--bg2);
       border: 1px solid var(--border);
@@ -265,19 +344,12 @@
       flex-direction: column;
       gap: clamp(5px, 0.7vh, 9px);
     }
-
     .arrete-card.en-cours {
       background: var(--red-bg);
       border: 1px solid var(--red-border);
       border-left: 4px solid var(--red);
     }
-    .arrete-card.a-venir {
-      background: var(--amber-bg);
-      border: 1px solid var(--amber-border);
-      border-left: 4px solid var(--amber);
-    }
 
-    /* Ligne 1 : badge + lieu */
     .arrete-top {
       display: flex;
       align-items: flex-start;
@@ -285,7 +357,6 @@
       flex-wrap: wrap;
     }
 
-    /* Badge de statut — grande étiquette visible */
     .badge-statut {
       display: inline-flex;
       align-items: center;
@@ -298,27 +369,18 @@
       flex-shrink: 0;
       line-height: 1.5;
     }
-    .badge-statut.red {
-      background: var(--red);
-      color: #fff;
-    }
-    .badge-statut.amber {
-      background: var(--amber);
-      color: #fff;
-    }
+    .badge-statut.red   { background: var(--red);   color: #fff; }
+    .badge-statut.amber { background: var(--amber); color: #fff; }
 
-    /* Lieu */
     .arrete-lieu {
       font-weight: 700;
       font-size: var(--lieu-size);
       color: var(--text);
       line-height: 1.25;
       flex: 1;
-      /* Pas de nowrap ni ellipsis → texte entier visible */
       word-break: break-word;
     }
 
-    /* Ligne 2 : dates */
     .arrete-dates {
       font-size: var(--meta-size);
       color: var(--muted);
@@ -330,17 +392,13 @@
       line-height: 1.4;
     }
 
-    .date-sep {
-      opacity: 0.5;
-    }
+    .date-sep { opacity: 0.5; }
 
-    /* Ligne 3 : motif */
     .arrete-motif {
       font-size: var(--meta-size);
       color: var(--text);
       font-weight: 400;
       line-height: 1.45;
-      /* Texte entier, pas d'ellipsis */
       word-break: break-word;
       opacity: 0.85;
     }
@@ -350,13 +408,6 @@
       color: var(--muted2);
       font-style: italic;
       padding: clamp(6px, 0.8vh, 10px) 0;
-    }
-
-    .divider {
-      height: 1px;
-      background: var(--border);
-      flex-shrink: 0;
-      margin: clamp(1px, 0.2vh, 3px) 0;
     }
 
     /* ===== BARRE INFÉRIEURE ===== */
@@ -437,15 +488,6 @@
       text-overflow: ellipsis;
     }
 
-    .pill-badge {
-      flex-shrink: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: clamp(2px, 0.3vh, 5px);
-    }
-
-    /* Barre de niveau Rhône */
     .rhone-level-wrap {
       display: flex;
       flex-direction: column;
@@ -470,8 +512,7 @@
       position: absolute;
       bottom: 0; left: 0; right: 0;
       border-radius: 99px;
-      transition: height 1.2s cubic-bezier(0.4, 0, 0.2, 1),
-                  background-color 0.9s ease;
+      transition: height 1.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.9s ease;
     }
 
     .rhone-level-bar::after {
@@ -492,12 +533,9 @@
       white-space: nowrap;
     }
 
-    /* ===== FULLSCREEN ===== */
     #btn-fullscreen::before { content: '⛶'; }
 
-    /* ===== ANIMATIONS ===== */
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
   </style>
 </head>
 <body>
@@ -519,6 +557,7 @@
   <!-- ARRÊTÉS -->
   <div class="arretes-section" id="arretes-section">
 
+    <!-- ===== EN COURS — section principale ===== -->
     <div class="section-header en-cours-header">
       <div class="dot red"></div>
       <span class="label">En cours</span>
@@ -528,7 +567,7 @@
     <div class="scroll-progress-bar" id="prog-en-cours">
       <div class="scroll-progress-fill fill-red" id="prog-fill-en-cours"></div>
     </div>
-    <div class="arretes-group" id="list-en-cours">
+    <div class="en-cours-group" id="list-en-cours">
       <div class="arretes-inner" id="inner-en-cours">
         <div class="empty-msg">Chargement…</div>
       </div>
@@ -536,27 +575,41 @@
 
     <div class="divider"></div>
 
-    <div class="section-header a-venir-header">
-      <div class="dot amber"></div>
-      <span class="label">À venir</span>
-      <div class="scroll-dots" id="dots-a-venir"></div>
-      <span class="count" id="count-a-venir">—</span>
-    </div>
-    <div class="scroll-progress-bar" id="prog-a-venir">
-      <div class="scroll-progress-fill fill-amber" id="prog-fill-a-venir"></div>
-    </div>
-    <div class="arretes-group" id="list-a-venir">
-      <div class="arretes-inner" id="inner-a-venir">
-        <div class="empty-msg">Chargement…</div>
+    <!-- ===== À VENIR — slider compact ===== -->
+    <div class="a-venir-section" id="a-venir-section">
+
+      <div class="section-header a-venir-header">
+        <div class="dot amber"></div>
+        <span class="label">À venir</span>
+        <!-- Indicateurs de slide -->
+        <div class="slider-indicators" id="slider-indicators"></div>
+        <span class="count" id="count-a-venir">—</span>
       </div>
+
+      <!-- Barre de progression du slider -->
+      <div class="slider-progress-bar" id="slider-progress-bar">
+        <div class="slider-progress-fill" id="slider-progress-fill"></div>
+      </div>
+
+      <!-- Slider : une carte visible à la fois -->
+      <div class="slider-viewport" id="slider-viewport">
+        <div class="slider-track" id="slider-track">
+          <div class="slider-card">
+            <div class="arrete-top">
+              <span class="badge-statut amber">À VENIR</span>
+              <div class="arrete-lieu">Chargement…</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
   </div>
 
-  <!-- BARRE INFÉRIEURE : Rhône + Météo -->
+  <!-- BARRE INFÉRIEURE -->
   <div class="info-bar">
 
-    <!-- PILL RHÔNE -->
     <div class="info-pill">
       <div class="pill-icon">🌊</div>
       <div class="pill-body">
@@ -572,7 +625,6 @@
       </div>
     </div>
 
-    <!-- PILL MÉTÉO -->
     <div class="info-pill">
       <div class="pill-icon" id="m-icon">⛅</div>
       <div class="pill-body">
@@ -604,7 +656,7 @@
   setInterval(updateClock, 1000);
   updateClock();
 
-  // ===== THÈME — auto 20h→7h, override manuel =====
+  // ===== THÈME =====
   const htmlEl   = document.documentElement;
   const btnTheme = document.getElementById('btn-theme');
 
@@ -622,12 +674,10 @@
     btnTheme.textContent = theme === 'dark' ? '☀️' : '🌙';
     btnTheme.title = theme === 'dark' ? 'Passer en clair' : 'Passer en sombre';
     if (!withTransition) {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          document.body.style.transition = '';
-          htmlEl.querySelectorAll('*').forEach(el => el.style.transition = '');
-        });
-      });
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        document.body.style.transition = '';
+        htmlEl.querySelectorAll('*').forEach(el => el.style.transition = '');
+      }));
     }
   }
 
@@ -646,8 +696,7 @@
     if (actuel !== attendu) {
       const now = Date.now();
       if (!overrideTheme || now >= overrideUntil) {
-        overrideTheme = null;
-        overrideUntil = 0;
+        overrideTheme = null; overrideUntil = 0;
         localStorage.removeItem('themeOverride');
         localStorage.removeItem('themeOverrideUntil');
         appliquerTheme(attendu, true);
@@ -677,18 +726,8 @@
   appliquerTheme(themeActuel(), false);
   setInterval(verifierThemeAuto, 60 * 1000);
 
-  // ===== MODE PLEIN ÉCRAN =====
+  // ===== PLEIN ÉCRAN =====
   const btnFS = document.getElementById('btn-fullscreen');
-
-  function recalibrerEtScroll() {
-    const ec = parseInt(document.getElementById('count-en-cours').textContent) || 0;
-    const av = parseInt(document.getElementById('count-a-venir').textContent)  || 0;
-    calibrer(ec, av);
-    setTimeout(() => {
-      activerScroll('list-en-cours', 'inner-en-cours', 'dots-en-cours', 'prog-fill-en-cours', 'prog-en-cours');
-      activerScroll('list-a-venir',  'inner-a-venir',  'dots-a-venir',  'prog-fill-a-venir',  'prog-a-venir');
-    }, 150);
-  }
 
   function isFullscreen() {
     return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement);
@@ -710,68 +749,48 @@
   btnFS.addEventListener('click', toggleFullscreen);
 
   function onFullscreenChange() {
-    setTimeout(recalibrerEtScroll, 200);
+    setTimeout(() => {
+      activerScrollEnCours();
+      relancerSliderAVenir();
+    }, 250);
   }
 
   document.addEventListener('fullscreenchange',       onFullscreenChange);
   document.addEventListener('webkitfullscreenchange', onFullscreenChange);
   document.addEventListener('mozfullscreenchange',    onFullscreenChange);
+  let resizeDebounce = null;
+  window.addEventListener('resize', () => {
+    // Reset immédiat position + arrêt scroll pour éviter les sauts
+    const inner = document.getElementById('inner-en-cours');
+    if (inner) {
+      inner.classList.add('no-transition');
+      inner.style.transform = 'translateY(0)';
+    }
+    const prev = scrollStates['list-en-cours'];
+    if (prev) { clearTimeout(prev.timer); delete scrollStates['list-en-cours']; }
+
+    clearTimeout(resizeDebounce);
+    resizeDebounce = setTimeout(() => {
+      calibrer(donneesEnCours.length, donneesAVenir.length);
+      requestAnimationFrame(() => {
+        if (inner) inner.classList.remove('no-transition');
+        activerScrollEnCours();
+        relancerSliderAVenir();
+      });
+    }, 250);
+  });
 
   // ===== CALIBRAGE ADAPTATIF =====
+  function clampVal(val, min, max) {
+    return Math.max(min, Math.min(max, Math.round(val)));
+  }
+
   function calibrer(nbEC, nbAV) {
-    const root  = document.documentElement;
-    const total = nbEC + nbAV;
-    const vw    = window.innerWidth;
-    const vh    = window.innerHeight;
+    const root = document.documentElement;
+    const vw   = window.innerWidth;
+    const vh   = window.innerHeight;
 
-    const groupEC = document.getElementById('list-en-cours');
-    const groupAV = document.getElementById('list-a-venir');
-    // Sections toujours à taille égale, quelle que soit la quantité de cartes
-    groupEC.style.flex = '1';
-    groupAV.style.flex = '1';
-
-    const espaceDispo = vh * 0.68;
-
-    function estimerHauteurCarte(lieuPx, metaPx, paddingV, gap) {
-      // 2.0 : les cartes sont plus hautes (3 lignes de texte)
-      return lieuPx * 1.5 + metaPx * 2.5 + paddingV * 2 + 6 + gap;
-    }
-
-    const headersFixes = vh * 0.09;
-
-    const niveaux = [
-      { lieu: Math.round(vw*0.042), meta: Math.round(vw*0.030), pill: Math.round(vw*0.024), gap: Math.round(vh*0.010), padV: Math.round(vh*0.013) },
-      { lieu: Math.round(vw*0.037), meta: Math.round(vw*0.026), pill: Math.round(vw*0.021), gap: Math.round(vh*0.009), padV: Math.round(vh*0.012) },
-      { lieu: Math.round(vw*0.032), meta: Math.round(vw*0.023), pill: Math.round(vw*0.018), gap: Math.round(vh*0.008), padV: Math.round(vh*0.011) },
-      { lieu: Math.round(vw*0.028), meta: Math.round(vw*0.020), pill: Math.round(vw*0.016), gap: Math.round(vh*0.007), padV: Math.round(vh*0.010) },
-      { lieu: Math.round(vw*0.024), meta: Math.round(vw*0.017), pill: Math.round(vw*0.014), gap: Math.round(vh*0.006), padV: Math.round(vh*0.009) },
-      { lieu: Math.round(vw*0.021), meta: Math.round(vw*0.015), pill: Math.round(vw*0.012), gap: Math.round(vh*0.005), padV: Math.round(vh*0.008) },
-      { lieu: Math.round(vw*0.018), meta: Math.round(vw*0.013), pill: Math.round(vw*0.011), gap: Math.round(vh*0.004), padV: Math.round(vh*0.007) },
-      { lieu: Math.round(vw*0.015), meta: Math.round(vw*0.011), pill: Math.round(vw*0.009), gap: Math.round(vh*0.003), padV: Math.round(vh*0.006) },
-    ];
-
-    const minLieu = Math.max(13, Math.round(vw * 0.013));
-    const minMeta = Math.max(10, Math.round(vw * 0.010));
-
-    let lieuPx = minLieu, metaPx = minMeta, pillPx = minMeta, gapPx = 4, paddingV = 5;
-
-    for (const n of niveaux) {
-      const hCarte = estimerHauteurCarte(n.lieu, n.meta, n.padV, n.gap);
-      const totalH = hCarte * total + headersFixes;
-      if (totalH <= espaceDispo) {
-        lieuPx = n.lieu; metaPx = n.meta; pillPx = n.pill;
-        gapPx = n.gap; paddingV = n.padV;
-        break;
-      }
-    }
-
-    root.style.setProperty('--lieu-size',       Math.max(lieuPx, minLieu) + 'px');
-    root.style.setProperty('--meta-size',        Math.max(metaPx, minMeta) + 'px');
-    root.style.setProperty('--pill-size',        Math.max(pillPx, minMeta) + 'px');
-    root.style.setProperty('--badge-size',       Math.max(Math.round(metaPx * 0.85), 9) + 'px');
-    root.style.setProperty('--card-gap',         gapPx + 'px');
-    root.style.setProperty('--card-padding-v',   paddingV + 'px');
-    root.style.setProperty('--clock-size',       clampVal(vw*0.09,  26, 80) + 'px');
+    root.style.setProperty('--clock-size',      clampVal(vw*0.09,  26, 80) + 'px');
     root.style.setProperty('--date-size',        clampVal(vw*0.022, 10, 20) + 'px');
     root.style.setProperty('--label-size',       clampVal(vw*0.020, 9,  18) + 'px');
     root.style.setProperty('--count-size',       clampVal(vw*0.017, 8,  15) + 'px');
@@ -780,18 +799,47 @@
     root.style.setProperty('--pill-sub-size',    clampVal(vw*0.017, 8,  14) + 'px');
     root.style.setProperty('--app-padding',      clampVal(vw*0.018, 7,  20) + 'px');
     root.style.setProperty('--section-gap',      clampVal(vh*0.008, 4,  14) + 'px');
-  }
 
-  function clampVal(val, min, max) {
-    return Math.max(min, Math.min(max, Math.round(val)));
-  }
+    // Taille des cartes en-cours : adaptatif selon le nombre
+    const total = Math.max(1, nbEC);
+    const espaceDispo = vh * 0.50; // env 50% pour la zone en-cours
 
-  window.addEventListener('resize', recalibrerEtScroll);
+    const niveaux = [
+      { lieu: Math.round(vw*0.042), meta: Math.round(vw*0.030), gap: Math.round(vh*0.010), padV: Math.round(vh*0.013) },
+      { lieu: Math.round(vw*0.037), meta: Math.round(vw*0.026), gap: Math.round(vh*0.009), padV: Math.round(vh*0.012) },
+      { lieu: Math.round(vw*0.032), meta: Math.round(vw*0.023), gap: Math.round(vh*0.008), padV: Math.round(vh*0.011) },
+      { lieu: Math.round(vw*0.028), meta: Math.round(vw*0.020), gap: Math.round(vh*0.007), padV: Math.round(vh*0.010) },
+      { lieu: Math.round(vw*0.024), meta: Math.round(vw*0.017), gap: Math.round(vh*0.006), padV: Math.round(vh*0.009) },
+      { lieu: Math.round(vw*0.021), meta: Math.round(vw*0.015), gap: Math.round(vh*0.005), padV: Math.round(vh*0.008) },
+      { lieu: Math.round(vw*0.018), meta: Math.round(vw*0.013), gap: Math.round(vh*0.004), padV: Math.round(vh*0.007) },
+    ];
+    const minLieu = 13, minMeta = 10;
+
+    let lieuPx = minLieu, metaPx = minMeta, gapPx = 4, paddingV = 5;
+
+    for (const n of niveaux) {
+      const hCarte = n.lieu * 1.5 + n.meta * 2.5 + n.padV * 2 + 6 + n.gap;
+      if (hCarte * total <= espaceDispo) {
+        lieuPx = n.lieu; metaPx = n.meta;
+        gapPx = n.gap; paddingV = n.padV;
+        break;
+      }
+    }
+
+    root.style.setProperty('--lieu-size',      Math.max(lieuPx, minLieu) + 'px');
+    root.style.setProperty('--meta-size',       Math.max(metaPx, minMeta) + 'px');
+    root.style.setProperty('--badge-size',      Math.max(Math.round(metaPx * 0.85), 9) + 'px');
+    root.style.setProperty('--card-gap',        gapPx + 'px');
+    root.style.setProperty('--card-padding-v',  paddingV + 'px');
+  }
 
   // ===== ARRÊTÉS =====
+  let donneesEnCours = [];
+  let donneesAVenir  = [];
+
   async function chargerArretes() {
     try {
-      const res = await fetch(APPS_SCRIPT_URL);
+      const res     = await fetch(APPS_SCRIPT_URL);
       const donnees = await res.json();
 
       function parseDate(str) {
@@ -803,64 +851,62 @@
         return new Date(str);
       }
 
-      const enCours = donnees
+      donneesEnCours = donnees
         .filter(a => a['Statut'] === "En cours")
         .sort((a, b) => parseDate(a['Date Fin']) - parseDate(b['Date Fin']));
 
-      const aVenir = donnees
+      donneesAVenir = donnees
         .filter(a => a['Statut'] === "À venir")
         .sort((a, b) => parseDate(a['Date Début']) - parseDate(b['Date Début']));
 
-      document.getElementById('count-en-cours').textContent = enCours.length;
-      document.getElementById('count-a-venir').textContent  = aVenir.length;
+      document.getElementById('count-en-cours').textContent = donneesEnCours.length;
+      document.getElementById('count-a-venir').textContent  = donneesAVenir.length;
 
-      // Génération HTML des cartes — texte entier visible, badge de statut proéminent
-      const creerCartesHTML = (liste, cssClass, badgeClass, etiquette) => {
-        if (liste.length === 0) return '<div class="empty-msg">Aucun arrêté</div>';
-        return liste.map(arrete => `
-          <div class="arrete-card ${cssClass}">
-            <div class="arrete-top">
-              <span class="badge-statut ${badgeClass}">${etiquette}</span>
-              <div class="arrete-lieu">📍 ${arrete['Lieu']}</div>
+      // Cartes EN COURS
+      const innerEC = document.getElementById('inner-en-cours');
+      if (innerEC) {
+        if (donneesEnCours.length === 0) {
+          innerEC.innerHTML = '<div class="empty-msg">Aucun arrêté en cours</div>';
+        } else {
+          innerEC.innerHTML = donneesEnCours.map(a => `
+            <div class="arrete-card en-cours">
+              <div class="arrete-top">
+                <span class="badge-statut red">EN COURS</span>
+                <div class="arrete-lieu">📍 ${a['Lieu']}</div>
+              </div>
+              <div class="arrete-dates">
+                📅 ${a['Date Début']} <span class="date-sep">→</span> ${a['Date Fin']}
+              </div>
+              <div class="arrete-motif">${a['Motif']}</div>
             </div>
-            <div class="arrete-dates">
-              📅 ${arrete['Date Début']}
-              <span class="date-sep">→</span>
-              ${arrete['Date Fin']}
-            </div>
-            <div class="arrete-motif">${arrete['Motif']}</div>
-          </div>
-        `).join('');
-      };
-
-      const containerEnCours = document.getElementById('inner-en-cours');
-      if (containerEnCours) containerEnCours.innerHTML = creerCartesHTML(enCours, 'en-cours', 'red', 'EN COURS');
-
-      const containerAVenir = document.getElementById('inner-a-venir');
-      if (containerAVenir) containerAVenir.innerHTML = creerCartesHTML(aVenir, 'a-venir', 'amber', 'À VENIR');
-
-      if (typeof calibrer === "function") {
-        setTimeout(() => {
-          calibrer(enCours.length, aVenir.length);
-          // Lance le scroll immédiatement après le calibrage, sans attendre un resize
-          setTimeout(() => {
-            activerScroll('list-en-cours', 'inner-en-cours', 'dots-en-cours', 'prog-fill-en-cours', 'prog-en-cours');
-            activerScroll('list-a-venir',  'inner-a-venir',  'dots-a-venir',  'prog-fill-a-venir',  'prog-a-venir');
-          }, 200);
-        }, 100);
+          `).join('');
+        }
       }
 
+      // Calibrage puis scroll en-cours puis slider à-venir
+      calibrer(donneesEnCours.length, donneesAVenir.length);
+      setTimeout(() => {
+        activerScrollEnCours();
+        construireSliderAVenir();
+      }, 150);
+
     } catch (err) {
-      console.error("Erreur de chargement des arrêtés :", err);
+      console.error("Erreur chargement arrêtés :", err);
       document.getElementById('inner-en-cours').innerHTML = '<div class="empty-msg">Erreur de connexion</div>';
-      document.getElementById('inner-a-venir').innerHTML  = '<div class="empty-msg">Erreur de connexion</div>';
+      document.getElementById('slider-track').innerHTML    = '<div class="slider-card"><div class="arrete-top"><span class="badge-statut amber">À VENIR</span><div class="arrete-lieu">Erreur de connexion</div></div></div>';
     }
   }
 
-  // ===== SCROLL PAGE PAR PAGE =====
+  // ===== SCROLL PAGE PAR PAGE — EN COURS =====
   const scrollStates = {};
 
-  function activerScroll(groupId, innerId, dotsId, progFillId, progBarId) {
+  function activerScrollEnCours() {
+    const groupId    = 'list-en-cours';
+    const innerId    = 'inner-en-cours';
+    const dotsId     = 'dots-en-cours';
+    const progFillId = 'prog-fill-en-cours';
+    const progBarId  = 'prog-en-cours';
+
     const group    = document.getElementById(groupId);
     const inner    = document.getElementById(innerId);
     const dotsEl   = document.getElementById(dotsId);
@@ -869,10 +915,7 @@
     if (!group || !inner) return;
 
     const prev = scrollStates[groupId];
-    if (prev) {
-      clearTimeout(prev.timer);
-      delete scrollStates[groupId];
-    }
+    if (prev) { clearTimeout(prev.timer); delete scrollStates[groupId]; }
 
     inner.style.transform = 'translateY(0)';
     inner.classList.remove('no-transition');
@@ -881,38 +924,26 @@
     progBar.classList.remove('visible');
     progFill.style.width = '0%';
 
-    requestAnimationFrame(() => {
+    requestAnimationFrame(() => requestAnimationFrame(() => {
       const groupH = group.clientHeight;
       const innerH = inner.scrollHeight;
+      if (innerH <= groupH + 4) return;
 
-      if (innerH <= groupH + 4) {
-        group.classList.remove('overflow');
-        return;
-      }
-
-      group.classList.add('overflow');
-
-      const cards = inner.querySelectorAll('.arrete-card');
+      const cards   = inner.querySelectorAll('.arrete-card');
       if (!cards.length) return;
 
       const cardH   = cards[0].offsetHeight;
       const gapPx   = parseFloat(getComputedStyle(inner).gap) || 6;
       const unitH   = cardH + gapPx;
-
-      const visibles   = Math.max(1, Math.floor(groupH / unitH));
+      const visibles = Math.max(1, Math.floor(groupH / unitH));
       const totalCards = cards.length;
-      const positions  = [];
+      const positions = [];
       for (let i = 0; i < totalCards; i += visibles) {
         positions.push(Math.min(i * unitH, innerH - groupH));
       }
-      const pages  = [...new Set(positions)];
+      const pages   = [...new Set(positions)];
       const nbPages = pages.length;
-
-      if (nbPages <= 1) {
-        group.classList.remove('overflow');
-        inner.style.transform = 'translateY(0)';
-        return;
-      }
+      if (nbPages <= 1) return;
 
       dotsEl.innerHTML = '';
       pages.forEach((_, i) => {
@@ -926,31 +957,30 @@
       let currentPage = 0;
 
       function updateUI() {
-        dotsEl.querySelectorAll('.scroll-dot').forEach((d, i) => {
-          d.classList.toggle('active', i === currentPage);
-        });
-        const pct = nbPages <= 1 ? 100 : (currentPage / (nbPages - 1)) * 100;
-        progFill.style.width = pct + '%';
+        dotsEl.querySelectorAll('.scroll-dot').forEach((d, i) => d.classList.toggle('active', i === currentPage));
+        progFill.style.width = (nbPages <= 1 ? 100 : (currentPage / (nbPages - 1)) * 100) + '%';
       }
 
       function scrollToPage(pageIdx, onDone) {
         const targetY = pages[pageIdx];
         inner.classList.remove('no-transition');
         inner.style.transform = `translateY(${-targetY}px)`;
+        let fired = false;
         const onEnd = () => {
+          if (fired) return; fired = true;
           inner.removeEventListener('transitionend', onEnd);
           if (onDone) onDone();
         };
         inner.addEventListener('transitionend', onEnd);
+        // Fallback si transitionend ne se déclenche pas (ex: même position)
+        setTimeout(onEnd, 800);
       }
 
-      // Temps de lecture : minimum 6 s, +1.1 s par carte visible — plus confortable sur grand écran
       const tempsLecture  = Math.max(6000, visibles * 1100);
       const tempsPauseBas = 3000;
 
       function cycle() {
         if (!scrollStates[groupId]) return;
-
         if (currentPage < nbPages - 1) {
           currentPage++;
           updateUI();
@@ -975,6 +1005,132 @@
     });
   }
 
+  // ===== SLIDER À VENIR =====
+  let sliderTimer    = null;
+  let sliderTicker   = null;
+  let sliderCurrent  = 0;
+  let sliderTotal    = 0;
+  const SLIDER_DUREE = 12000; // ms par slide
+
+  function construireSliderAVenir() {
+    // Nettoyage
+    if (sliderTimer)  { clearTimeout(sliderTimer);  sliderTimer  = null; }
+    if (sliderTicker) { clearInterval(sliderTicker); sliderTicker = null; }
+
+    const track      = document.getElementById('slider-track');
+    const viewport   = document.getElementById('slider-viewport');
+    const indicators = document.getElementById('slider-indicators');
+    const progFill   = document.getElementById('slider-progress-fill');
+
+    if (!track || !viewport) return;
+
+    // HTML des cartes
+    if (donneesAVenir.length === 0) {
+      track.innerHTML = `
+        <div class="slider-card">
+          <div class="arrete-top">
+            <span class="badge-statut amber">À VENIR</span>
+            <div class="arrete-lieu">Aucun arrêté à venir</div>
+          </div>
+        </div>`;
+      indicators.innerHTML = '';
+      progFill.style.width = '0%';
+      return;
+    }
+
+    track.innerHTML = donneesAVenir.map(a => `
+      <div class="slider-card">
+        <div class="arrete-top">
+          <span class="badge-statut amber">À VENIR</span>
+          <div class="arrete-lieu">📍 ${a['Lieu']}</div>
+        </div>
+        <div class="arrete-dates">
+          📅 ${a['Date Début']} <span class="date-sep">→</span> ${a['Date Fin']}
+        </div>
+        <div class="arrete-motif">${a['Motif']}</div>
+      </div>
+    `).join('');
+
+    sliderTotal   = donneesAVenir.length;
+    sliderCurrent = 0;
+
+    // Indicateurs
+    indicators.innerHTML = '';
+    for (let i = 0; i < sliderTotal; i++) {
+      const pip = document.createElement('div');
+      pip.className = 'slider-pip' + (i === 0 ? ' active' : '');
+      indicators.appendChild(pip);
+    }
+
+    // Largeur du track
+    track.style.width = (sliderTotal * 100) + '%';
+    track.querySelectorAll('.slider-card').forEach(c => c.style.width = (100 / sliderTotal) + '%');
+
+    // Aller à slide 0 sans anim
+    track.classList.add('no-anim');
+    track.style.transform = 'translateX(0)';
+    requestAnimationFrame(() => track.classList.remove('no-anim'));
+
+    if (sliderTotal === 1) {
+      progFill.style.width = '100%';
+      return;
+    }
+
+    lancerSlider();
+  }
+
+  function lancerSlider() {
+    if (sliderTimer)  { clearTimeout(sliderTimer);  sliderTimer  = null; }
+    if (sliderTicker) { clearInterval(sliderTicker); sliderTicker = null; }
+
+    const track      = document.getElementById('slider-track');
+    const indicators = document.getElementById('slider-indicators');
+    const progFill   = document.getElementById('slider-progress-fill');
+    if (!track) return;
+
+    let elapsed = 0;
+    const tickMs = 50;
+
+    // Barre de progression en temps réel
+    sliderTicker = setInterval(() => {
+      elapsed += tickMs;
+      const pct = Math.min(100, (elapsed / SLIDER_DUREE) * 100);
+      progFill.style.width = pct + '%';
+    }, tickMs);
+
+    sliderTimer = setTimeout(() => {
+      clearInterval(sliderTicker);
+      sliderTicker = null;
+
+      sliderCurrent = (sliderCurrent + 1) % sliderTotal;
+      allerASlide(sliderCurrent);
+      lancerSlider();
+    }, SLIDER_DUREE);
+  }
+
+  function allerASlide(idx) {
+    const track      = document.getElementById('slider-track');
+    const indicators = document.getElementById('slider-indicators');
+    const progFill   = document.getElementById('slider-progress-fill');
+    if (!track) return;
+
+    const pct = (100 / sliderTotal) * idx;
+    track.classList.remove('no-anim');
+    track.style.transform = `translateX(-${pct}%)`;
+
+    // Mise à jour indicateurs
+    indicators.querySelectorAll('.slider-pip').forEach((p, i) => p.classList.toggle('active', i === idx));
+    progFill.style.width = '0%';
+  }
+
+  function relancerSliderAVenir() {
+    if (sliderTotal > 1) {
+      if (sliderTimer)  { clearTimeout(sliderTimer);  sliderTimer  = null; }
+      if (sliderTicker) { clearInterval(sliderTicker); sliderTicker = null; }
+      lancerSlider();
+    }
+  }
+
   // ===== MÉTÉO =====
   const WMO_ICONS = {
     0:'☀️',1:'🌤',2:'⛅',3:'☁️',
@@ -991,14 +1147,13 @@
 
   async function chargerMeteo() {
     try {
-      const url = "https://api.open-meteo.com/v1/forecast?latitude=45.5228&longitude=4.8742&current=temperature_2m,weathercode&timezone=Europe%2FParis";
-      const res  = await fetch(url);
+      const res  = await fetch("https://api.open-meteo.com/v1/forecast?latitude=45.5228&longitude=4.8742&current=temperature_2m,weathercode&timezone=Europe%2FParis");
       const data = await res.json();
-      const tempActu = Math.round(data.current.temperature_2m * 10) / 10;
-      const codeActu = data.current.weathercode;
-      document.getElementById('m-temp').innerHTML = `${tempActu}<span class="unit">°C</span>`;
-      document.getElementById('m-icon').textContent = WMO_ICONS[codeActu] || '🌤';
-      document.getElementById('m-cond').textContent = WMO_LABELS[codeActu] || '—';
+      const temp = Math.round(data.current.temperature_2m * 10) / 10;
+      const code = data.current.weathercode;
+      document.getElementById('m-temp').innerHTML = `${temp}<span class="unit">°C</span>`;
+      document.getElementById('m-icon').textContent = WMO_ICONS[code] || '🌤';
+      document.getElementById('m-cond').textContent = WMO_LABELS[code] || '—';
     } catch(e) {
       document.getElementById('m-cond').textContent = '⚠ Indisponible';
     }
@@ -1009,50 +1164,38 @@
   async function chargerDebit(idx = 0) {
     if (idx >= STATIONS.length) {
       document.getElementById('rhone-debit').innerHTML = '—<span class="unit"> m³/s</span>';
-      document.getElementById('rhone-level-fill').style.height = '0%';
-      document.getElementById('rhone-level-pct').textContent = '—';
       return;
     }
     try {
       const res  = await fetch(`https://hubeau.eaufrance.fr/api/v2/hydrometrie/observations_tr?code_entite=${STATIONS[idx]}&grandeur_hydro=Q&size=1&sort=desc&fields=date_obs,resultat_obs`);
       const data = await res.json();
       if (data?.data?.length > 0) {
-        const last   = data.data[0];
-        const m3s    = (last.resultat_obs / 1000).toFixed(0);
-        const obsDate = new Date(last.date_obs);
-        const dateStr = obsDate.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit' });
-        const heureStr = obsDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        const last     = data.data[0];
+        const m3s      = (last.resultat_obs / 1000).toFixed(0);
+        const obsDate  = new Date(last.date_obs);
+        const dateStr  = obsDate.toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit', year:'2-digit' });
+        const heureStr = obsDate.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
         document.getElementById('rhone-debit').innerHTML = `${m3s}<span class="unit"> m³/s</span>`;
         document.getElementById('rhone-heure').textContent = `Relevé le ${dateStr} à ${heureStr}`;
         document.getElementById('rhone-station').textContent = `#${STATIONS[idx]}`;
-        const QMAX  = 4780;
-        const QMOD  = 1060;
+        const QMAX = 4780, QMOD = 1060;
         const debit = parseInt(m3s);
         const pct   = Math.min(100, Math.max(1, (debit / QMAX) * 100));
-        let fillColor;
-        if (debit <= QMOD)   fillColor = 'var(--accent)';
-        else if (pct < 50)   fillColor = 'var(--amber)';
-        else                 fillColor = 'var(--red)';
+        const fillColor = debit <= QMOD ? 'var(--accent)' : pct < 50 ? 'var(--amber)' : 'var(--red)';
         const fillEl = document.getElementById('rhone-level-fill');
-        const pctEl  = document.getElementById('rhone-level-pct');
         fillEl.style.height = pct.toFixed(1) + '%';
         fillEl.style.background = fillColor;
-        pctEl.textContent = Math.round(pct) + '%';
-        pctEl.style.color = fillColor;
+        document.getElementById('rhone-level-pct').textContent = Math.round(pct) + '%';
+        document.getElementById('rhone-level-pct').style.color = fillColor;
       } else { chargerDebit(idx+1); }
     } catch(e) { chargerDebit(idx+1); }
   }
 
-  // ===== REFRESH AUTO À 7h01 ET 19h01 =====
-  function verifierRefreshAuto() {
+  // ===== REFRESH AUTO =====
+  setInterval(() => {
     const now = new Date();
-    const h = now.getHours();
-    const m = now.getMinutes();
-    if ((h === 7 || h === 19) && m === 1) {
-      location.reload();
-    }
-  }
-  setInterval(verifierRefreshAuto, 60 * 1000);
+    if ((now.getHours() === 7 || now.getHours() === 19) && now.getMinutes() === 1) location.reload();
+  }, 60 * 1000);
 
   // ===== INIT =====
   calibrer(0, 0);
@@ -1062,8 +1205,6 @@
   setInterval(chargerArretes, 5  * 60 * 1000);
   setInterval(chargerMeteo,   30 * 60 * 1000);
   setInterval(chargerDebit,   10 * 60 * 1000);
-  setInterval(chargerArretes, 3600000);
-
 </script>
 </body>
 </html>
