@@ -43,7 +43,7 @@
     .slider-track.no-anim  { transition: none !important; }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { width: 100%; height: 100%; overflow: hidden; }
+    html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: none; touch-action: none; }
 
     body {
       font-family: 'Outfit', sans-serif;
@@ -53,21 +53,22 @@
     }
 
     :root {
-      --lieu-size:        clamp(14px, 2.6vw, 30px);
-      --meta-size:        clamp(11px, 1.8vw, 20px);
-      --pill-size:        clamp(9px,  1.4vw, 16px);
-      --clock-size:       clamp(32px, 7vw,   80px);
-      --date-size:        clamp(10px, 1.5vw, 18px);
-      --label-size:       clamp(9px,  1.5vw, 16px);
-      --count-size:       clamp(9px,  1.3vw, 15px);
-      --pill-val-size:    clamp(16px, 3.2vw, 38px);
-      --pill-label-size:  clamp(8px,  1.2vw, 13px);
-      --pill-sub-size:    clamp(8px,  1.2vw, 13px);
-      --card-padding-v:   clamp(10px, 1.2vh, 18px);
-      --card-gap:         clamp(6px,  0.8vh, 12px);
-      --section-gap:      clamp(5px,  0.7vh, 12px);
-      --app-padding:      clamp(8px,  1.2vw, 18px);
-      --badge-size:       clamp(9px,  1.3vw, 15px);
+      /* Tailles recalculées dynamiquement par calibrer() en JS */
+      --lieu-size:        clamp(12px, 1.8vw, 22px);
+      --meta-size:        clamp(10px, 1.3vw, 16px);
+      --pill-size:        clamp(9px,  1.2vw, 14px);
+      --clock-size:       clamp(28px, 5.5vw, 72px);
+      --date-size:        clamp(9px,  1.2vw, 15px);
+      --label-size:       clamp(8px,  1.1vw, 14px);
+      --count-size:       clamp(8px,  1.0vw, 13px);
+      --pill-val-size:    clamp(14px, 2.8vw, 34px);
+      --pill-label-size:  clamp(7px,  1.0vw, 12px);
+      --pill-sub-size:    clamp(7px,  1.0vw, 12px);
+      --card-padding-v:   clamp(7px,  1.0vh, 14px);
+      --card-gap:         clamp(5px,  0.7vh, 10px);
+      --section-gap:      clamp(4px,  0.6vh, 10px);
+      --app-padding:      clamp(6px,  1.0vw, 16px);
+      --badge-size:       clamp(8px,  1.0vw, 13px);
     }
 
     .loader-bar {
@@ -129,15 +130,15 @@
     }
 
     .clock-saint {
-      font-size: clamp(9px, 1.25vw, 14px);
+      font-size: clamp(11px, 1.6vw, 17px);
       color: var(--muted);
-      font-weight: 400;
+      font-weight: 500;
       letter-spacing: 0.03em;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       max-width: 100%;
-      opacity: 0.7;
+      opacity: 0.85;
     }
 
     .header-btns {
@@ -254,18 +255,19 @@
       border: 1px solid var(--amber-border);
       border-left: 4px solid var(--amber);
       border-radius: 10px;
-      padding: clamp(5px, 0.7vh, 9px) clamp(8px, 1.2vw, 14px);
+      padding: var(--card-padding-v) clamp(8px, 1.2vw, 16px);
       box-shadow: var(--shadow);
       display: flex; flex-direction: column;
-      gap: clamp(2px, 0.3vh, 4px);
-      max-height: clamp(70px, 12vh, 120px);
+      gap: clamp(3px, 0.5vh, 7px);
+      height: var(--slider-card-height, auto);
       overflow: hidden;
     }
 
-    .slider-card .arrete-lieu  { font-size: clamp(11px, 1.5vw, 18px); line-height: 1.2; }
-    .slider-card .arrete-dates { font-size: clamp(9px, 1.1vw, 13px); }
-    .slider-card .arrete-motif { font-size: clamp(9px, 1.1vw, 13px); opacity: 0.8; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-    .slider-card .badge-statut { font-size: clamp(8px, 1.0vw, 11px); padding: 1px 6px; }
+    /* Slider card : mêmes tailles que les cartes en-cours */
+    .slider-card .arrete-lieu  { font-size: var(--lieu-size); line-height: 1.25; font-weight: 700; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .slider-card .arrete-dates { font-size: var(--meta-size); }
+    .slider-card .arrete-motif { font-size: var(--meta-size); opacity: 0.8; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .slider-card .badge-statut { font-size: var(--badge-size); padding: 1px 6px; }
 
     .slider-indicators { display: flex; align-items: center; gap: 5px; margin-left: 8px; }
 
@@ -287,9 +289,9 @@
     .arrete-card {
       background: var(--bg2); border: 1px solid var(--border);
       border-radius: 10px;
-      padding: clamp(10px, 1.4vh, 18px) clamp(10px, 1.4vw, 18px);
+      padding: var(--card-padding-v) clamp(8px, 1.2vw, 16px);
       box-shadow: var(--shadow);
-      display: flex; flex-direction: column; gap: clamp(5px, 0.7vh, 9px);
+      display: flex; flex-direction: column; gap: clamp(3px, 0.5vh, 7px);
     }
     .arrete-card.en-cours {
       background: var(--red-bg); border: 1px solid var(--red-border);
@@ -662,42 +664,62 @@
     const vw   = window.innerWidth;
     const vh   = window.innerHeight;
 
-    root.style.setProperty('--clock-size',      clampVal(vw*0.09,  26, 80) + 'px');
-    root.style.setProperty('--date-size',        clampVal(vw*0.022, 10, 20) + 'px');
-    root.style.setProperty('--label-size',       clampVal(vw*0.020, 9,  18) + 'px');
-    root.style.setProperty('--count-size',       clampVal(vw*0.017, 8,  15) + 'px');
-    root.style.setProperty('--pill-val-size',    clampVal(vw*0.050, 14, 40) + 'px');
-    root.style.setProperty('--pill-label-size',  clampVal(vw*0.017, 8,  14) + 'px');
-    root.style.setProperty('--pill-sub-size',    clampVal(vw*0.017, 8,  14) + 'px');
-    root.style.setProperty('--app-padding',      clampVal(vw*0.018, 7,  20) + 'px');
-    root.style.setProperty('--section-gap',      clampVal(vh*0.008, 4,  14) + 'px');
+    // Elements fixes : base en vh (independant de la largeur, stable sur mobile)
+    root.style.setProperty('--clock-size',      clampVal(vh*0.075, 22, 70) + 'px');
+    root.style.setProperty('--date-size',        clampVal(vh*0.024, 10, 19) + 'px');
+    root.style.setProperty('--label-size',       clampVal(vh*0.018, 8,  15) + 'px');
+    root.style.setProperty('--count-size',       clampVal(vh*0.016, 8,  14) + 'px');
+    root.style.setProperty('--pill-val-size',    clampVal(vh*0.045, 13, 36) + 'px');
+    root.style.setProperty('--pill-label-size',  clampVal(vh*0.016, 7,  13) + 'px');
+    root.style.setProperty('--pill-sub-size',    clampVal(vh*0.015, 7,  13) + 'px');
+    root.style.setProperty('--app-padding',      clampVal(Math.min(vw,vh)*0.015, 5, 16) + 'px');
+    root.style.setProperty('--section-gap',      clampVal(vh*0.007, 3, 9) + 'px');
 
-    const total = Math.max(1, nbEC);
-    const espaceDispo = vh * 0.50;
+    // Budget vertical : on mesure ce qui reste apres les zones fixes
+    const hHeader  = clampVal(vh*0.075,22,70)*1.4 + clampVal(vh*0.007,3,9)*2 + 4;
+    const hInfoBar = clampVal(vh*0.045,13,36)*2.2 + clampVal(vh*0.01,6,12)*2;
+    const hHeaders = clampVal(vh*0.018,8,15)*2 + 6;
+    const hGaps    = clampVal(vh*0.007,3,9)*5;
+    const reserve  = hHeader + hInfoBar + hHeaders + hGaps + 20;
+    const budget   = vh - reserve;
+
+    // 72% pour en-cours, 22% pour a-venir (une slider card = taille d une carte en-cours)
+    const budgetEC = budget * 0.72;
+    const nbCartes = Math.max(1, nbEC);
+
+    // Niveaux de taille : tout en vh -> taille identique quel que soit la largeur ecran
     const niveaux = [
-      { lieu: Math.round(vw*0.042), meta: Math.round(vw*0.030), gap: Math.round(vh*0.010), padV: Math.round(vh*0.013) },
-      { lieu: Math.round(vw*0.037), meta: Math.round(vw*0.026), gap: Math.round(vh*0.009), padV: Math.round(vh*0.012) },
-      { lieu: Math.round(vw*0.032), meta: Math.round(vw*0.023), gap: Math.round(vh*0.008), padV: Math.round(vh*0.011) },
-      { lieu: Math.round(vw*0.028), meta: Math.round(vw*0.020), gap: Math.round(vh*0.007), padV: Math.round(vh*0.010) },
-      { lieu: Math.round(vw*0.024), meta: Math.round(vw*0.017), gap: Math.round(vh*0.006), padV: Math.round(vh*0.009) },
-      { lieu: Math.round(vw*0.021), meta: Math.round(vw*0.015), gap: Math.round(vh*0.005), padV: Math.round(vh*0.008) },
-      { lieu: Math.round(vw*0.018), meta: Math.round(vw*0.013), gap: Math.round(vh*0.004), padV: Math.round(vh*0.007) },
-    ];
-    const minLieu = 13, minMeta = 10;
-    let lieuPx = minLieu, metaPx = minMeta, gapPx = 4, paddingV = 5;
-    for (const n of niveaux) {
-      const hCarte = n.lieu * 1.5 + n.meta * 2.5 + n.padV * 2 + 6 + n.gap;
-      if (hCarte * total <= espaceDispo) {
-        lieuPx = n.lieu; metaPx = n.meta; gapPx = n.gap; paddingV = n.padV; break;
-      }
-    }
-    root.style.setProperty('--lieu-size',     Math.max(lieuPx, minLieu) + 'px');
-    root.style.setProperty('--meta-size',      Math.max(metaPx, minMeta) + 'px');
-    root.style.setProperty('--badge-size',     Math.max(Math.round(metaPx * 0.85), 9) + 'px');
-    root.style.setProperty('--card-gap',       gapPx + 'px');
-    root.style.setProperty('--card-padding-v', paddingV + 'px');
-  }
+      { lieu: Math.round(vh*0.030), meta: Math.round(vh*0.022), padV: Math.round(vh*0.014), gap: Math.round(vh*0.010) },
+      { lieu: Math.round(vh*0.027), meta: Math.round(vh*0.020), padV: Math.round(vh*0.012), gap: Math.round(vh*0.009) },
+      { lieu: Math.round(vh*0.024), meta: Math.round(vh*0.018), padV: Math.round(vh*0.011), gap: Math.round(vh*0.008) },
+      { lieu: Math.round(vh*0.021), meta: Math.round(vh*0.016), padV: Math.round(vh*0.010), gap: Math.round(vh*0.007) },
+      { lieu: Math.round(vh*0.019), meta: Math.round(vh*0.014), padV: Math.round(vh*0.009), gap: Math.round(vh*0.006) },
+      { lieu: Math.round(vh*0.017), meta: Math.round(vh*0.013), padV: Math.round(vh*0.008), gap: Math.round(vh*0.005) },
+      { lieu: Math.round(vh*0.015), meta: Math.round(vh*0.012), padV: Math.round(vh*0.007), gap: Math.round(vh*0.004) },
+    ].map(n => ({
+      lieu: Math.max(n.lieu, 12), meta: Math.max(n.meta, 10),
+      padV: Math.max(n.padV, 5),  gap:  Math.max(n.gap,  3),
+    }));
 
+    // Hauteur estimee d une carte (lieu peut wrapper 2 lignes sur mobile)
+    function hCarte(n) {
+      return n.lieu * 2.0 + n.meta * 1.4 + n.meta * 1.5 + n.padV * 2 + n.lieu * 1.3 + 4;
+    }
+
+    let choix = niveaux[niveaux.length - 1];
+    for (const n of niveaux) {
+      const totalH = hCarte(n) * nbCartes + n.gap * Math.max(0, nbCartes - 1);
+      if (totalH <= budgetEC) { choix = n; break; }
+    }
+
+    root.style.setProperty('--lieu-size',       choix.lieu + 'px');
+    root.style.setProperty('--meta-size',        choix.meta + 'px');
+    root.style.setProperty('--badge-size',       Math.max(Math.round(choix.meta*0.85), 9) + 'px');
+    root.style.setProperty('--card-gap',         choix.gap  + 'px');
+    root.style.setProperty('--card-padding-v',   choix.padV + 'px');
+    // Slider card = meme hauteur qu une carte en-cours
+    root.style.setProperty('--slider-card-height', Math.round(hCarte(choix)) + 'px');
+  }
   // ===== ARRÊTÉS =====
   // Le filtrage blocage_total est désormais fait par Gemini dans Apps Script.
   // Le HTML reçoit uniquement des arrêtés de blocage total — aucun filtre JS nécessaire.
@@ -715,8 +737,28 @@
         return new Date(str);
       }
 
+      const today = new Date(); today.setHours(0,0,0,0);
+
+      // Pour les "Sans date" : calcule date fin = +1 mois depuis date début ou date réception
+      donnees.forEach(a => {
+        if (a['Statut'] === "Sans date") {
+          const baseStr = (a['Date Début'] && a['Date Début'] !== 'N/A') ? a['Date Début'] : a['Date Réception'];
+          const base = baseStr ? new Date(baseStr.includes('/') ? baseStr.split('/').reverse().join('-') : baseStr) : new Date();
+          const fin = new Date(base);
+          fin.setMonth(fin.getMonth() + 1);
+          // Si la date calculée est dépassée, on exclut
+          if (fin >= today) {
+            const jj = String(fin.getDate()).padStart(2,'0');
+            const mm = String(fin.getMonth()+1).padStart(2,'0');
+            a['Date Fin'] = jj + '/' + mm + '/' + fin.getFullYear();
+          } else {
+            a['Statut'] = '_expire'; // marquer comme expiré
+          }
+        }
+      });
+
       donneesEnCours = donnees
-        .filter(a => a['Statut'] === "En cours")
+        .filter(a => a['Statut'] === "En cours" || a['Statut'] === "Sans date")
         .sort((a, b) => parseDate(a['Date Fin']) - parseDate(b['Date Fin']));
 
       donneesAVenir = donnees
