@@ -53,7 +53,6 @@
     }
 
     :root {
-      /* Tailles recalculées dynamiquement par calibrer() en JS */
       --lieu-size:        clamp(12px, 1.8vw, 22px);
       --meta-size:        clamp(10px, 1.3vw, 16px);
       --pill-size:        clamp(9px,  1.2vw, 14px);
@@ -86,7 +85,6 @@
       gap: var(--section-gap);
     }
 
-    /* ===== HORLOGE ===== */
     .clock-section {
       flex-shrink: 0;
       display: flex;
@@ -263,7 +261,6 @@
       overflow: hidden;
     }
 
-    /* Slider card : mêmes tailles que les cartes en-cours */
     .slider-card .arrete-lieu  { font-size: var(--lieu-size); line-height: 1.25; font-weight: 700; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
     .slider-card .arrete-dates { font-size: var(--meta-size); }
     .slider-card .arrete-motif { font-size: var(--meta-size); opacity: 0.8; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
@@ -334,7 +331,6 @@
       font-style: italic; padding: clamp(6px, 0.8vh, 10px) 0;
     }
 
-    /* ===== BARRE INFÉRIEURE ===== */
     .info-bar {
       flex-shrink: 0; display: flex; gap: clamp(5px, 0.8vw, 12px);
     }
@@ -518,7 +514,7 @@
 <script>
   const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxo4Y50C5QbthOZy1rRC7pT9FPMRIhtJOCOjFmqp3rBEK6Tv4Md8fT629Nki4WPY7REWw/exec";
 
-  // ===== ÉPHÉMÉRIDE — Saint du jour (table fixe, zéro dépendance réseau) =====
+  // ===== ÉPHÉMÉRIDE =====
   const S={"01/01":"Marie, Mère de Dieu","02/01":"Basile & Grégoire","03/01":"Geneviève","04/01":"Odilon","05/01":"Édouard","06/01":"Melchior, Gaspard & Balthazar","07/01":"Raymond","08/01":"Lucien","09/01":"Alix","10/01":"Guillaume","11/01":"Paulin","12/01":"Tatiana","13/01":"Yvette","14/01":"Nina","15/01":"Rémi","16/01":"Marcel","17/01":"Roseline","18/01":"Prisca","19/01":"Marius","20/01":"Sébastien","21/01":"Agnès","22/01":"Vincent","23/01":"Barnard","24/01":"François de Sales","25/01":"Conversion de Paul","26/01":"Timothée & Tite","27/01":"Angèle","28/01":"Thomas d'Aquin","29/01":"Gildas","30/01":"Martine","31/01":"Marcelle","01/02":"Ella","02/02":"Présentation du Seigneur","03/02":"Blaise","04/02":"Véronique","05/02":"Agathe","06/02":"Paul Miki","07/02":"Eugénie","08/02":"Jacqueline","09/02":"Apolline","10/02":"Arnaud","11/02":"N.-D. de Lourdes","12/02":"Félix","13/02":"Béatrice","14/02":"Valentin","15/02":"Claude","16/02":"Julienne","17/02":"Alexis","18/02":"Bernadette","19/02":"Gabin","20/02":"Aimée","21/02":"Damien","22/02":"Isabelle","23/02":"Lazare","24/02":"Modeste","25/02":"Roméo","26/02":"Nestor","27/02":"Honorine","28/02":"Romain","29/02":"Auguste","01/03":"Aubin","02/03":"Charles le Bon","03/03":"Guénolé","04/03":"Casimir","05/03":"Olive","06/03":"Colette","07/03":"Félicité & Perpétue","08/03":"Jean de Dieu","09/03":"Françoise Romaine","10/03":"Vivien","11/03":"Rosine","12/03":"Justine","13/03":"Rodrigue","14/03":"Mathilde","15/03":"Louise","16/03":"Bénédicte","17/03":"Patrick","18/03":"Cyrille","19/03":"Joseph","20/03":"Herbert","21/03":"Clémence","22/03":"Léa","23/03":"Victorien","24/03":"Catherine de Suède","25/03":"Annonciation","26/03":"Larissa","27/03":"Habacuc","28/03":"Gontran","29/03":"Gwladys","30/03":"Amédée","31/03":"Benjamin","01/04":"Hugues","02/04":"Sandrine","03/04":"Richard","04/04":"Isidore","05/04":"Irène","06/04":"Marcellin","07/04":"J.-B. de la Salle","08/04":"Julie","09/04":"Gautier","10/04":"Fulbert","11/04":"Stanislas","12/04":"Jules","13/04":"Ida","14/04":"Maxime","15/04":"Paterne","16/04":"Benoît-Joseph","17/04":"Anicet","18/04":"Parfait","19/04":"Emma","20/04":"Odette","21/04":"Anselme","22/04":"Alexandre","23/04":"Georges","24/04":"Fidèle","25/04":"Marc","26/04":"Alida","27/04":"Zita","28/04":"Valérie","29/04":"Catherine de Sienne","30/04":"Robert","01/05":"Joseph","02/05":"Boris","03/05":"Philippe & Jacques","04/05":"Sylvain","05/05":"Judith","06/05":"Prudence","07/05":"Gisèle","08/05":"Victoire 1945","09/05":"Pacôme","10/05":"Solange","11/05":"Estelle","12/05":"Achille","13/05":"Rolande","14/05":"Matthias","15/05":"Denise","16/05":"Honoré","17/05":"Pascal","18/05":"Éric","19/05":"Yves","20/05":"Bernardin","21/05":"Constantin","22/05":"Rita","23/05":"Didier","24/05":"Donatien","25/05":"Sophie","26/05":"Bérenger","27/05":"Augustin de Canterbury","28/05":"Germain","29/05":"Aymar","30/05":"Ferdinand","31/05":"Visitation","01/06":"Justin","02/06":"Blandine","03/06":"Kévin","04/06":"Clotilde","05/06":"Igor","06/06":"Norbert","07/06":"Gilbert","08/06":"Médard","09/06":"Diane","10/06":"Landry","11/06":"Barnabé","12/06":"Guy","13/06":"Antoine de Padoue","14/06":"Élisée","15/06":"Germaine","16/06":"Jean-François Régis","17/06":"Hervé","18/06":"Léonce","19/06":"Romuald","20/06":"Silvère","21/06":"Rodolphe","22/06":"Paulin de Nole","23/06":"Audrey","24/06":"Jean-Baptiste","25/06":"Prosper","26/06":"Anthelme","27/06":"Fernand","28/06":"Irénée","29/06":"Pierre & Paul","30/06":"Martial","01/07":"Thierry","02/07":"Martinien","03/07":"Thomas","04/07":"Florent","05/07":"Antoine","06/07":"Mariette","07/07":"Raoul","08/07":"Thibaut","09/07":"Amandine","10/07":"Ulrich","11/07":"Benoît","12/07":"Olivier","13/07":"Henri & Joël","14/07":"Fête Nationale","15/07":"Donald","16/07":"N.-D. du Carmel","17/07":"Charlotte","18/07":"Frédéric","19/07":"Arsène","20/07":"Marina","21/07":"Victor","22/07":"Marie-Madeleine","23/07":"Brigitte","24/07":"Christine","25/07":"Jacques","26/07":"Anne & Joachim","27/07":"Nathalie","28/07":"Samson","29/07":"Marthe","30/07":"Juliette","31/07":"Ignace de Loyola","01/08":"Alphonse de Liguori","02/08":"Julien Eymard","03/08":"Lydie","04/08":"Jean-Marie Vianney","05/08":"Abel","06/08":"Transfiguration","07/08":"Gaétan","08/08":"Dominique","09/08":"Edith Stein","10/08":"Laurent","11/08":"Claire","12/08":"Clarisse","13/08":"Hippolyte","14/08":"Evrard","15/08":"Assomption","16/08":"Armel","17/08":"Hyacinthe","18/08":"Hélène","19/08":"Jean-Eudes","20/08":"Bernard","21/08":"Christophe","22/08":"Fabrice","23/08":"Rose de Lima","24/08":"Barthélémy","25/08":"Louis","26/08":"Natacha","27/08":"Monique","28/08":"Augustin","29/08":"Sabine","30/08":"Fiacre","31/08":"Aristide","01/09":"Gilles","02/09":"Ingrid","03/09":"Grégoire le Grand","04/09":"Rosalie","05/09":"Raïssa","06/09":"Bertrand","07/09":"Reine","08/09":"Nativité de Marie","09/09":"Alain","10/09":"Inès","11/09":"Adelphe","12/09":"Apollinaire","13/09":"Aimé","14/09":"Exaltation de la Croix","15/09":"Roland","16/09":"Edith","17/09":"Renaud","18/09":"Nadège","19/09":"Janvier","20/09":"Davy","21/09":"Matthieu","22/09":"Maurice","23/09":"Constance","24/09":"Thècle","25/09":"Hermann","26/09":"Côme & Damien","27/09":"Vincent de Paul","28/09":"Venceslas","29/09":"Michel, Gabriel & Raphaël","30/09":"Jérôme","01/10":"Thérèse de l'Enfant-Jésus","02/10":"Léger","03/10":"Gérard","04/10":"François d'Assise","05/10":"Fleur","06/10":"Bruno","07/10":"N.-D. du Rosaire","08/10":"Pélagie","09/10":"Denis","10/10":"Ghislain","11/10":"Firmin","12/10":"Wilfrid","13/10":"Géraud","14/10":"Juste","15/10":"Thérèse d'Avila","16/10":"Edwige","17/10":"Ignace d'Antioche","18/10":"Luc","19/10":"René","20/10":"Adeline","21/10":"Céline","22/10":"Élodie","23/10":"Jean de Capistran","24/10":"Florentin","25/10":"Crépin","26/10":"Dimitri","27/10":"Émeline","28/10":"Simon & Jude","29/10":"Narcisse","30/10":"Bienheureux Martyrs","31/10":"Quentin","01/11":"Toussaint","02/11":"Commémoration des défunts","03/11":"Hubert","04/11":"Charles Borromée","05/11":"Sylvie","06/11":"Bertille","07/11":"Carine","08/11":"Geoffrey","09/11":"Théodore","10/11":"Léon","11/11":"Martin","12/11":"Christian","13/11":"Brice","14/11":"Sidoine","15/11":"Albert","16/11":"Marguerite d'Écosse","17/11":"Élisabeth","18/11":"Aude","19/11":"Tanguy","20/11":"Edmond","21/11":"Présentation de Marie","22/11":"Cécile","23/11":"Clément","24/11":"Flora","25/11":"Catherine d'Alexandrie","26/11":"Delphine","27/11":"Sévrin","28/11":"Jacques de la Marche","29/11":"Saturnin","30/11":"André","01/12":"Florence","02/12":"Viviane","03/12":"François-Xavier","04/12":"Barbara","05/12":"Gérald","06/12":"Nicolas","07/12":"Ambroise","08/12":"Immaculée Conception","09/12":"Pierre Fourier","10/12":"Romaric","11/12":"Daniel","12/12":"Jeanne de Chantal","13/12":"Lucie","14/12":"Odile","15/12":"Ninon","16/12":"Alice","17/12":"Gaël","18/12":"Gatien","19/12":"Urbain","20/12":"Abraham","21/12":"Pierre Canisius","22/12":"Françoise-Xavière","23/12":"Armand","24/12":"Adèle","25/12":"Noël","26/12":"Étienne","27/12":"Jean","28/12":"Saints Innocents","29/12":"David","30/12":"Roger","31/12":"Sylvestre"};
   function afficherSaint() {
     const n=new Date(), k=String(n.getDate()).padStart(2,'0')+'/'+String(n.getMonth()+1).padStart(2,'0');
@@ -537,7 +533,7 @@
     });
     if (h==='07' && m==='01' && s==='00') {
       chargerArretes();
-      afficherSaint(); // rafraîchit le saint au changement de jour
+      afficherSaint();
     }
   }
   setInterval(updateClock, 1000);
@@ -643,16 +639,20 @@
   let resizeDebounce = null;
   window.addEventListener('resize', () => {
     const prev = scrollStates['list-en-cours'];
-    if (prev) { clearTimeout(prev.timer); delete scrollStates['list-en-cours']; }
+    if (prev) {
+      clearTimeout(prev.timer);
+      clearInterval(prev.ticker);
+      delete scrollStates['list-en-cours'];
+    }
     const inner = document.getElementById('inner-en-cours');
-    if (inner) { inner.classList.add('no-transition'); inner.style.transform = 'translateY(0)'; }
+    if (inner) {
+      inner.classList.add('no-transition');
+      inner.style.transform = 'translateY(0)';
+    }
     clearTimeout(resizeDebounce);
     resizeDebounce = setTimeout(() => {
       calibrer(donneesEnCours.length, donneesAVenir.length);
-      requestAnimationFrame(() => requestAnimationFrame(() => {
-        if (inner) inner.classList.remove('no-transition');
-        activerScrollEnCours();
-      }));
+      activerScrollEnCours();
     }, 300);
   });
 
@@ -664,7 +664,6 @@
     const vw   = window.innerWidth;
     const vh   = window.innerHeight;
 
-    // Elements fixes : base en vh (independant de la largeur, stable sur mobile)
     root.style.setProperty('--clock-size',      clampVal(vh*0.075, 22, 70) + 'px');
     root.style.setProperty('--date-size',        clampVal(vh*0.024, 10, 19) + 'px');
     root.style.setProperty('--label-size',       clampVal(vh*0.018, 8,  15) + 'px');
@@ -675,7 +674,6 @@
     root.style.setProperty('--app-padding',      clampVal(Math.min(vw,vh)*0.015, 5, 16) + 'px');
     root.style.setProperty('--section-gap',      clampVal(vh*0.007, 3, 9) + 'px');
 
-    // Budget vertical : on mesure ce qui reste apres les zones fixes
     const hHeader  = clampVal(vh*0.075,22,70)*1.4 + clampVal(vh*0.007,3,9)*2 + 4;
     const hInfoBar = clampVal(vh*0.045,13,36)*2.2 + clampVal(vh*0.01,6,12)*2;
     const hHeaders = clampVal(vh*0.018,8,15)*2 + 6;
@@ -683,11 +681,9 @@
     const reserve  = hHeader + hInfoBar + hHeaders + hGaps + 20;
     const budget   = vh - reserve;
 
-    // 72% pour en-cours, 22% pour a-venir (une slider card = taille d une carte en-cours)
     const budgetEC = budget * 0.72;
     const nbCartes = Math.max(1, nbEC);
 
-    // Niveaux de taille : tout en vh -> taille identique quel que soit la largeur ecran
     const niveaux = [
       { lieu: Math.round(vh*0.030), meta: Math.round(vh*0.022), padV: Math.round(vh*0.014), gap: Math.round(vh*0.010) },
       { lieu: Math.round(vh*0.027), meta: Math.round(vh*0.020), padV: Math.round(vh*0.012), gap: Math.round(vh*0.009) },
@@ -701,7 +697,6 @@
       padV: Math.max(n.padV, 5),  gap:  Math.max(n.gap,  3),
     }));
 
-    // Hauteur estimee d une carte (lieu peut wrapper 2 lignes sur mobile)
     function hCarte(n) {
       return n.lieu * 2.0 + n.meta * 1.4 + n.meta * 1.5 + n.padV * 2 + n.lieu * 1.3 + 4;
     }
@@ -717,12 +712,10 @@
     root.style.setProperty('--badge-size',       Math.max(Math.round(choix.meta*0.85), 9) + 'px');
     root.style.setProperty('--card-gap',         choix.gap  + 'px');
     root.style.setProperty('--card-padding-v',   choix.padV + 'px');
-    // Slider card = meme hauteur qu une carte en-cours
     root.style.setProperty('--slider-card-height', Math.round(hCarte(choix)) + 'px');
   }
+
   // ===== ARRÊTÉS =====
-  // Le filtrage blocage_total est désormais fait par Gemini dans Apps Script.
-  // Le HTML reçoit uniquement des arrêtés de blocage total — aucun filtre JS nécessaire.
   let donneesEnCours = [];
   let donneesAVenir  = [];
 
@@ -739,20 +732,18 @@
 
       const today = new Date(); today.setHours(0,0,0,0);
 
-      // Pour les "Sans date" : calcule date fin = +1 mois depuis date début ou date réception
       donnees.forEach(a => {
         if (a['Statut'] === "Sans date") {
           const baseStr = (a['Date Début'] && a['Date Début'] !== 'N/A') ? a['Date Début'] : a['Date Réception'];
           const base = baseStr ? new Date(baseStr.includes('/') ? baseStr.split('/').reverse().join('-') : baseStr) : new Date();
           const fin = new Date(base);
           fin.setMonth(fin.getMonth() + 1);
-          // Si la date calculée est dépassée, on exclut
           if (fin >= today) {
             const jj = String(fin.getDate()).padStart(2,'0');
             const mm = String(fin.getMonth()+1).padStart(2,'0');
             a['Date Fin'] = jj + '/' + mm + '/' + fin.getFullYear();
           } else {
-            a['Statut'] = '_expire'; // marquer comme expiré
+            a['Statut'] = '_expire';
           }
         }
       });
@@ -801,134 +792,150 @@
   // ===== SCROLL PAGE PAR PAGE — EN COURS =====
   const scrollStates = {};
 
-function activerScrollEnCours() {
-  const groupId  = 'list-en-cours';
-  const group    = document.getElementById(groupId);
-  const inner    = document.getElementById('inner-en-cours');
-  const dotsEl   = document.getElementById('dots-en-cours');
-  const progFill = document.getElementById('prog-fill-en-cours');
-  const progBar  = document.getElementById('prog-en-cours');
-  if (!group || !inner) return;
+  function activerScrollEnCours() {
+    const groupId  = 'list-en-cours';
+    const group    = document.getElementById(groupId);
+    const inner    = document.getElementById('inner-en-cours');
+    const dotsEl   = document.getElementById('dots-en-cours');
+    const progFill = document.getElementById('prog-fill-en-cours');
+    const progBar  = document.getElementById('prog-en-cours');
+    if (!group || !inner) return;
 
-  // Stoppe le cycle précédent
-  const prev = scrollStates[groupId];
-  if (prev) { clearTimeout(prev.timer); clearInterval(prev.ticker); delete scrollStates[groupId]; }
+    const prev = scrollStates[groupId];
+    if (prev) { clearTimeout(prev.timer); clearInterval(prev.ticker); delete scrollStates[groupId]; }
 
-  inner.classList.add('no-transition');
-  inner.style.transform = 'translateY(0)';
-  dotsEl.innerHTML = '';
-  dotsEl.classList.remove('visible');
-  progBar.classList.remove('visible');
-  progFill.style.width = '0%';
+    inner.classList.add('no-transition');
+    inner.style.transform = 'translateY(0)';
+    dotsEl.innerHTML = '';
+    dotsEl.classList.remove('visible');
+    progBar.classList.remove('visible');
+    progFill.style.width = '0%';
 
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    inner.classList.remove('no-transition');
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      inner.classList.remove('no-transition');
 
-    const groupH = group.clientHeight;
-    const innerH = inner.scrollHeight;
-    if (innerH <= groupH + 4) return;
+      const groupH = group.clientHeight;
+      const innerH = inner.scrollHeight;
+      if (innerH <= groupH + 4) return;
 
-    const cards = Array.from(inner.querySelectorAll('.arrete-card'));
-    if (!cards.length) return;
+      const cards = Array.from(inner.querySelectorAll('.arrete-card'));
+      if (!cards.length) return;
 
-    // Calcule les positions de début de chaque page (groupH px à la fois)
-    const gapPx = parseFloat(getComputedStyle(inner).gap) || 6;
-    let positions = [0];
-    let cumul = 0;
-    for (let i = 0; i < cards.length; i++) {
-      const h = cards[i].offsetHeight + (i < cards.length - 1 ? gapPx : 0);
-      cumul += h;
-      if (cumul > groupH && positions[positions.length - 1] !== positions[positions.length - 1]) continue;
-      // Nouvelle page si ce qu'on a accumulé dépasse la zone visible
-      const offset = Math.min(cards[i].offsetTop, innerH - groupH);
-      if (offset > positions[positions.length - 1] + 2) positions.push(offset);
-    }
-    // Fallback simple : pages de groupH px
-    if (positions.length <= 1) {
-      positions = [];
-      for (let y = 0; y <= innerH - groupH; y += groupH) positions.push(y);
-    }
-    const pages = [...new Set(positions.map(p => Math.round(p)))];
-    const nbPages = pages.length;
-    if (nbPages <= 1) return;
+      const gapPx = parseFloat(getComputedStyle(inner).gap) || 6;
+      let positions = [0];
+      for (let i = 0; i < cards.length; i++) {
+        const offset = Math.min(cards[i].offsetTop, innerH - groupH);
+        if (offset > positions[positions.length - 1] + 2) positions.push(offset);
+      }
+      if (positions.length <= 1) {
+        positions = [];
+        for (let y = 0; y <= innerH - groupH; y += groupH) positions.push(y);
+      }
+      const pages = [...new Set(positions.map(p => Math.round(p)))];
+      const nbPages = pages.length;
+      if (nbPages <= 1) return;
 
-    // Crée les points cliquables
-    pages.forEach((_, i) => {
-      const d = document.createElement('div');
-      d.className = 'scroll-dot' + (i === 0 ? ' active' : '');
-      d.style.cursor = 'pointer';
-      d.addEventListener('click', () => {
+      pages.forEach((_, i) => {
+        const d = document.createElement('div');
+        d.className = 'scroll-dot' + (i === 0 ? ' active' : '');
+        d.style.cursor = 'pointer';
+        d.addEventListener('click', () => {
+          const state = scrollStates[groupId];
+          if (!state) return;
+          clearTimeout(state.timer);
+          clearInterval(state.ticker);
+          state.currentPage = i;
+          goToPage(i);
+          updateUI(i);
+          state.timer = setTimeout(cycle, SCROLL_DUREE);
+        });
+        dotsEl.appendChild(d);
+      });
+      dotsEl.classList.add('visible');
+      progBar.classList.add('visible');
+
+      const SCROLL_DUREE = 2 * 60 * 1000;
+      const PAUSE_BAS    = 3000;
+
+      function updateUI(page) {
+        dotsEl.querySelectorAll('.scroll-dot')
+          .forEach((d, i) => d.classList.toggle('active', i === page));
+        progFill.style.width = (nbPages <= 1 ? 100 : (page / (nbPages - 1)) * 100) + '%';
+      }
+
+      function goToPage(pageIdx) {
+        inner.classList.remove('no-transition');
+        inner.style.transform = `translateY(${-pages[pageIdx]}px)`;
+      }
+
+      function cycle() {
         const state = scrollStates[groupId];
         if (!state) return;
-        clearTimeout(state.timer);
-        clearInterval(state.ticker);
-        state.currentPage = i;
-        goToPage(i);
-        updateUI(i);
-        state.timer = setTimeout(cycle, SCROLL_DUREE);
-        startTicker(i);
-      });
-      dotsEl.appendChild(d);
-    });
-    dotsEl.classList.add('visible');
-    progBar.classList.add('visible');
-
-    const SCROLL_DUREE = 2 * 60 * 1000; // 2 minutes par page
-    const PAUSE_BAS    = 3000;
-
-    function updateUI(page) {
-      dotsEl.querySelectorAll('.scroll-dot')
-        .forEach((d, i) => d.classList.toggle('active', i === page));
-      progFill.style.width = (nbPages <= 1 ? 100 : (page / (nbPages - 1)) * 100) + '%';
-    }
-
-    function goToPage(pageIdx) {
-      inner.classList.remove('no-transition');
-      inner.style.transform = `translateY(${-pages[pageIdx]}px)`;
-    }
-
-    function startTicker(page) {
-      const state = scrollStates[groupId];
-      if (!state) return;
-      clearInterval(state.ticker);
-      let elapsed = 0;
-      state.ticker = setInterval(() => {
-        elapsed += 100;
-        const pct = Math.min(100, (elapsed / SCROLL_DUREE) * 100);
-        // barre de progression entre dots (optionnel, on peut désactiver)
-      }, 100);
-    }
-
-    function cycle() {
-      const state = scrollStates[groupId];
-      if (!state) return;
-      if (state.currentPage < nbPages - 1) {
-        state.currentPage++;
-        goToPage(state.currentPage);
-        updateUI(state.currentPage);
-        state.timer = setTimeout(cycle, SCROLL_DUREE);
-      } else {
-        state.timer = setTimeout(() => {
-          const s = scrollStates[groupId];
-          if (!s) return;
-          s.currentPage = 0;
-          goToPage(0);
-          updateUI(0);
-          s.timer = setTimeout(cycle, SCROLL_DUREE);
-        }, PAUSE_BAS);
+        if (state.currentPage < nbPages - 1) {
+          state.currentPage++;
+          goToPage(state.currentPage);
+          updateUI(state.currentPage);
+          state.timer = setTimeout(cycle, SCROLL_DUREE);
+        } else {
+          state.timer = setTimeout(() => {
+            const s = scrollStates[groupId];
+            if (!s) return;
+            s.currentPage = 0;
+            goToPage(0);
+            updateUI(0);
+            s.timer = setTimeout(cycle, SCROLL_DUREE);
+          }, PAUSE_BAS);
+        }
       }
-    }
 
-    const state = { timer: null, ticker: null, currentPage: 0 };
-    scrollStates[groupId] = state;
-    updateUI(0);
-    state.timer = setTimeout(cycle, SCROLL_DUREE);
-  }));
-}
+      const state = { timer: null, ticker: null, currentPage: 0 };
+      scrollStates[groupId] = state;
+      updateUI(0);
+      state.timer = setTimeout(cycle, SCROLL_DUREE);
+    }));
+  }
 
   // ===== SLIDER À VENIR =====
   let sliderTimer = null, sliderTicker = null, sliderCurrent = 0, sliderTotal = 0;
   const SLIDER_DUREE = 12000;
+
+  function allerASlide(idx) {
+    const track      = document.getElementById('slider-track');
+    const indicators = document.getElementById('slider-indicators');
+    const progFill   = document.getElementById('slider-progress-fill');
+    if (!track) return;
+    track.classList.remove('no-anim');
+    track.style.transform = `translateX(-${(100 / sliderTotal) * idx}%)`;
+    indicators.querySelectorAll('.slider-pip').forEach((p, i) => p.classList.toggle('active', i === idx));
+    progFill.style.width = '0%';
+  }
+
+  function lancerSlider() {
+    if (sliderTimer)  { clearTimeout(sliderTimer);  sliderTimer  = null; }
+    if (sliderTicker) { clearInterval(sliderTicker); sliderTicker = null; }
+    const track    = document.getElementById('slider-track');
+    const progFill = document.getElementById('slider-progress-fill');
+    if (!track) return;
+    let elapsed = 0;
+    sliderTicker = setInterval(() => {
+      elapsed += 50;
+      progFill.style.width = Math.min(100, (elapsed / SLIDER_DUREE) * 100) + '%';
+    }, 50);
+    sliderTimer = setTimeout(() => {
+      clearInterval(sliderTicker); sliderTicker = null;
+      sliderCurrent = (sliderCurrent + 1) % sliderTotal;
+      allerASlide(sliderCurrent);
+      lancerSlider();
+    }, SLIDER_DUREE);
+  }
+
+  function relancerSliderAVenir() {
+    if (sliderTotal > 1) {
+      if (sliderTimer)  { clearTimeout(sliderTimer);  sliderTimer  = null; }
+      if (sliderTicker) { clearInterval(sliderTicker); sliderTicker = null; }
+      lancerSlider();
+    }
+  }
 
   function construireSliderAVenir() {
     if (sliderTimer)  { clearTimeout(sliderTimer);  sliderTimer  = null; }
@@ -960,56 +967,28 @@ function activerScrollEnCours() {
     sliderTotal = donneesAVenir.length;
     sliderCurrent = 0;
     indicators.innerHTML = '';
-for (let i = 0; i < sliderTotal; i++) {
-  const pip = document.createElement('div');
-  pip.className = 'slider-pip' + (i === 0 ? ' active' : '');
-  pip.style.cursor = 'pointer';
-  pip.addEventListener('click', () => {
-    if (sliderTimer)  { clearTimeout(sliderTimer);  sliderTimer  = null; }
-    if (sliderTicker) { clearInterval(sliderTicker); sliderTicker = null; }
-    sliderCurrent = i;
-    allerASlide(i);
-    lancerSlider();
-  });
-  indicators.appendChild(pip);
-}
-
-  function lancerSlider() {
-    if (sliderTimer)  { clearTimeout(sliderTimer);  sliderTimer  = null; }
-    if (sliderTicker) { clearInterval(sliderTicker); sliderTicker = null; }
-    const track    = document.getElementById('slider-track');
-    const progFill = document.getElementById('slider-progress-fill');
-    if (!track) return;
-    let elapsed = 0;
-    sliderTicker = setInterval(() => {
-      elapsed += 50;
-      progFill.style.width = Math.min(100, (elapsed / SLIDER_DUREE) * 100) + '%';
-    }, 50);
-    sliderTimer = setTimeout(() => {
-      clearInterval(sliderTicker); sliderTicker = null;
-      sliderCurrent = (sliderCurrent + 1) % sliderTotal;
-      allerASlide(sliderCurrent);
-      lancerSlider();
-    }, SLIDER_DUREE);
-  }
-
-  function allerASlide(idx) {
-    const track      = document.getElementById('slider-track');
-    const indicators = document.getElementById('slider-indicators');
-    const progFill   = document.getElementById('slider-progress-fill');
-    if (!track) return;
-    track.classList.remove('no-anim');
-    track.style.transform = `translateX(-${(100 / sliderTotal) * idx}%)`;
-    indicators.querySelectorAll('.slider-pip').forEach((p, i) => p.classList.toggle('active', i === idx));
-    progFill.style.width = '0%';
-  }
-
-  function relancerSliderAVenir() {
-    if (sliderTotal > 1) {
-      if (sliderTimer)  { clearTimeout(sliderTimer);  sliderTimer  = null; }
-      if (sliderTicker) { clearInterval(sliderTicker); sliderTicker = null; }
-      lancerSlider();
+    for (let i = 0; i < sliderTotal; i++) {
+      const pip = document.createElement('div');
+      pip.className = 'slider-pip' + (i === 0 ? ' active' : '');
+      pip.style.cursor = 'pointer';
+      pip.addEventListener('click', () => {
+        if (sliderTimer)  { clearTimeout(sliderTimer);  sliderTimer  = null; }
+        if (sliderTicker) { clearInterval(sliderTicker); sliderTicker = null; }
+        sliderCurrent = i;
+        allerASlide(i);
+        lancerSlider();
+      });
+      indicators.appendChild(pip);
     }
+
+    track.style.width = (sliderTotal * 100) + '%';
+    track.querySelectorAll('.slider-card').forEach(c => c.style.width = (100 / sliderTotal) + '%');
+    track.classList.add('no-anim');
+    track.style.transform = 'translateX(0)';
+    requestAnimationFrame(() => track.classList.remove('no-anim'));
+
+    if (sliderTotal === 1) { progFill.style.width = '100%'; return; }
+    lancerSlider();
   }
 
   // ===== MÉTÉO =====
