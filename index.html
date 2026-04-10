@@ -801,91 +801,130 @@
   // ===== SCROLL PAGE PAR PAGE — EN COURS =====
   const scrollStates = {};
 
-  function activerScrollEnCours() {
-    const groupId    = 'list-en-cours';
-    const group      = document.getElementById(groupId);
-    const inner      = document.getElementById('inner-en-cours');
-    const dotsEl     = document.getElementById('dots-en-cours');
-    const progFill   = document.getElementById('prog-fill-en-cours');
-    const progBar    = document.getElementById('prog-en-cours');
-    if (!group || !inner) return;
+function activerScrollEnCours() {
+  const groupId  = 'list-en-cours';
+  const group    = document.getElementById(groupId);
+  const inner    = document.getElementById('inner-en-cours');
+  const dotsEl   = document.getElementById('dots-en-cours');
+  const progFill = document.getElementById('prog-fill-en-cours');
+  const progBar  = document.getElementById('prog-en-cours');
+  if (!group || !inner) return;
 
-    const prev = scrollStates[groupId];
-    if (prev) { clearTimeout(prev.timer); delete scrollStates[groupId]; }
+  // Stoppe le cycle précédent
+  const prev = scrollStates[groupId];
+  if (prev) { clearTimeout(prev.timer); clearInterval(prev.ticker); delete scrollStates[groupId]; }
 
-    inner.style.transform = 'translateY(0)';
+  inner.classList.add('no-transition');
+  inner.style.transform = 'translateY(0)';
+  dotsEl.innerHTML = '';
+  dotsEl.classList.remove('visible');
+  progBar.classList.remove('visible');
+  progFill.style.width = '0%';
+
+  requestAnimationFrame(() => requestAnimationFrame(() => {
     inner.classList.remove('no-transition');
-    dotsEl.innerHTML = '';
-    dotsEl.classList.remove('visible');
-    progBar.classList.remove('visible');
-    progFill.style.width = '0%';
 
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      const groupH = group.clientHeight;
-      const innerH = inner.scrollHeight;
-      if (innerH <= groupH + 4) return;
+    const groupH = group.clientHeight;
+    const innerH = inner.scrollHeight;
+    if (innerH <= groupH + 4) return;
 
-      const cards  = inner.querySelectorAll('.arrete-card');
-      if (!cards.length) return;
+    const cards = Array.from(inner.querySelectorAll('.arrete-card'));
+    if (!cards.length) return;
 
-      const cardH   = cards[0].offsetHeight;
-      const gapPx   = parseFloat(getComputedStyle(inner).gap) || 6;
-      const unitH   = cardH + gapPx;
-      const visibles = Math.max(1, Math.floor(groupH / unitH));
-      const positions = [];
-      for (let i = 0; i < cards.length; i += visibles)
-        positions.push(Math.min(i * unitH, innerH - groupH));
-      const pages   = [...new Set(positions)];
-      const nbPages = pages.length;
-      if (nbPages <= 1) return;
+    // Calcule les positions de début de chaque page (groupH px à la fois)
+    const gapPx = parseFloat(getComputedStyle(inner).gap) || 6;
+    let positions = [0];
+    let cumul = 0;
+    for (let i = 0; i < cards.length; i++) {
+      const h = cards[i].offsetHeight + (i < cards.length - 1 ? gapPx : 0);
+      cumul += h;
+      if (cumul > groupH && positions[positions.length - 1] !== positions[positions.length - 1]) continue;
+      // Nouvelle page si ce qu'on a accumulé dépasse la zone visible
+      const offset = Math.min(cards[i].offsetTop, innerH - groupH);
+      if (offset > positions[positions.length - 1] + 2) positions.push(offset);
+    }
+    // Fallback simple : pages de groupH px
+    if (positions.length <= 1) {
+      positions = [];
+      for (let y = 0; y <= innerH - groupH; y += groupH) positions.push(y);
+    }
+    const pages = [...new Set(positions.map(p => Math.round(p)))];
+    const nbPages = pages.length;
+    if (nbPages <= 1) return;
 
-      pages.forEach((_, i) => {
-        const d = document.createElement('div');
-        d.className = 'scroll-dot' + (i === 0 ? ' active' : '');
-        dotsEl.appendChild(d);
+    // Crée les points cliquables
+    pages.forEach((_, i) => {
+      const d = document.createElement('div');
+      d.className = 'scroll-dot' + (i === 0 ? ' active' : '');
+      d.style.cursor = 'pointer';
+      d.addEventListener('click', () => {
+        const state = scrollStates[groupId];
+        if (!state) return;
+        clearTimeout(state.timer);
+        clearInterval(state.ticker);
+        state.currentPage = i;
+        goToPage(i);
+        updateUI(i);
+        state.timer = setTimeout(cycle, SCROLL_DUREE);
+        startTicker(i);
       });
-      dotsEl.classList.add('visible');
-      progBar.classList.add('visible');
+      dotsEl.appendChild(d);
+    });
+    dotsEl.classList.add('visible');
+    progBar.classList.add('visible');
 
-      let currentPage = 0;
+    const SCROLL_DUREE = 2 * 60 * 1000; // 2 minutes par page
+    const PAUSE_BAS    = 3000;
 
-      function updateUI() {
-        dotsEl.querySelectorAll('.scroll-dot').forEach((d, i) => d.classList.toggle('active', i === currentPage));
-        progFill.style.width = (nbPages <= 1 ? 100 : (currentPage / (nbPages - 1)) * 100) + '%';
+    function updateUI(page) {
+      dotsEl.querySelectorAll('.scroll-dot')
+        .forEach((d, i) => d.classList.toggle('active', i === page));
+      progFill.style.width = (nbPages <= 1 ? 100 : (page / (nbPages - 1)) * 100) + '%';
+    }
+
+    function goToPage(pageIdx) {
+      inner.classList.remove('no-transition');
+      inner.style.transform = `translateY(${-pages[pageIdx]}px)`;
+    }
+
+    function startTicker(page) {
+      const state = scrollStates[groupId];
+      if (!state) return;
+      clearInterval(state.ticker);
+      let elapsed = 0;
+      state.ticker = setInterval(() => {
+        elapsed += 100;
+        const pct = Math.min(100, (elapsed / SCROLL_DUREE) * 100);
+        // barre de progression entre dots (optionnel, on peut désactiver)
+      }, 100);
+    }
+
+    function cycle() {
+      const state = scrollStates[groupId];
+      if (!state) return;
+      if (state.currentPage < nbPages - 1) {
+        state.currentPage++;
+        goToPage(state.currentPage);
+        updateUI(state.currentPage);
+        state.timer = setTimeout(cycle, SCROLL_DUREE);
+      } else {
+        state.timer = setTimeout(() => {
+          const s = scrollStates[groupId];
+          if (!s) return;
+          s.currentPage = 0;
+          goToPage(0);
+          updateUI(0);
+          s.timer = setTimeout(cycle, SCROLL_DUREE);
+        }, PAUSE_BAS);
       }
+    }
 
-      function scrollToPage(pageIdx, onDone) {
-        inner.classList.remove('no-transition');
-        inner.style.transform = `translateY(${-pages[pageIdx]}px)`;
-        let fired = false;
-        const onEnd = () => { if (fired) return; fired = true; inner.removeEventListener('transitionend', onEnd); if (onDone) onDone(); };
-        inner.addEventListener('transitionend', onEnd);
-        setTimeout(onEnd, 800);
-      }
-
-      const tempsLecture  = Math.max(6000, visibles * 1100);
-      const tempsPauseBas = 3000;
-
-      function cycle() {
-        if (!scrollStates[groupId]) return;
-        if (currentPage < nbPages - 1) {
-          currentPage++;
-          updateUI();
-          scrollToPage(currentPage, () => { scrollStates[groupId].timer = setTimeout(cycle, tempsLecture); });
-        } else {
-          scrollStates[groupId].timer = setTimeout(() => {
-            if (!scrollStates[groupId]) return;
-            currentPage = 0; updateUI();
-            scrollToPage(0, () => { scrollStates[groupId].timer = setTimeout(cycle, tempsLecture); });
-          }, tempsPauseBas);
-        }
-      }
-
-      scrollStates[groupId] = {};
-      updateUI();
-      scrollStates[groupId].timer = setTimeout(cycle, tempsLecture);
-    }));
-  }
+    const state = { timer: null, ticker: null, currentPage: 0 };
+    scrollStates[groupId] = state;
+    updateUI(0);
+    state.timer = setTimeout(cycle, SCROLL_DUREE);
+  }));
+}
 
   // ===== SLIDER À VENIR =====
   let sliderTimer = null, sliderTicker = null, sliderCurrent = 0, sliderTotal = 0;
@@ -921,19 +960,19 @@
     sliderTotal = donneesAVenir.length;
     sliderCurrent = 0;
     indicators.innerHTML = '';
-    for (let i = 0; i < sliderTotal; i++) {
-      const pip = document.createElement('div');
-      pip.className = 'slider-pip' + (i === 0 ? ' active' : '');
-      indicators.appendChild(pip);
-    }
-    track.style.width = (sliderTotal * 100) + '%';
-    track.querySelectorAll('.slider-card').forEach(c => c.style.width = (100 / sliderTotal) + '%');
-    track.classList.add('no-anim');
-    track.style.transform = 'translateX(0)';
-    requestAnimationFrame(() => track.classList.remove('no-anim'));
-    if (sliderTotal === 1) { progFill.style.width = '100%'; return; }
+for (let i = 0; i < sliderTotal; i++) {
+  const pip = document.createElement('div');
+  pip.className = 'slider-pip' + (i === 0 ? ' active' : '');
+  pip.style.cursor = 'pointer';
+  pip.addEventListener('click', () => {
+    if (sliderTimer)  { clearTimeout(sliderTimer);  sliderTimer  = null; }
+    if (sliderTicker) { clearInterval(sliderTicker); sliderTicker = null; }
+    sliderCurrent = i;
+    allerASlide(i);
     lancerSlider();
-  }
+  });
+  indicators.appendChild(pip);
+}
 
   function lancerSlider() {
     if (sliderTimer)  { clearTimeout(sliderTimer);  sliderTimer  = null; }
